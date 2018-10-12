@@ -1,0 +1,87 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+.App-header {
+  background-color: #88c;
+  height: 70px;
+  padding: 20px;
+  color: white;
+}
+
+.App-title {
+  font-size: 1.5em;
+}
+
+.App-intro {
+  font-size: large;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+button {
+  padding: 1em;
+  border: none;
+  border-bottom: 2px solid #888;
+  border-radius: 0.4em;
+  font-size: 120%;
+  cursor: pointer;
+  transition: 300ms;
+}
+button:focus {
+  outline: none;
+}
+button:active {
+  font-size: 130%;
+}
+
+button.primary {
+  font-weight: bold;
+  color: white;
+  background-color: cornflowerblue;
+}
+button.primary:active {
+  background-color: cyan;
+  color: yellow;
+}
+button.primary:hover {
+  background-color: blue;
+}
+
+.game-header {
+  padding: 0.5em;
+  text-align: left;
+  border-bottom: 1px solid lightgray;
+}
+
+.Board {
+  margin: 0.8em;
+  background-color: #efefef;
+}
+
+.Cell {
+  cursor: pointer;
+  /* opacity: 1; */
+}
+.Cell:hover {
+  /* opacity: 0.6; */
+}
+.Cell-rect {
+  opacity: 0.1;
+  transition: 200ms;
+}
+.Cell-rect:hover {
+  opacity: 0.4;
+}
