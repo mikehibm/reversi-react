@@ -11,15 +11,18 @@ export enum Turns {
   White = 2,
 }
 
+export const ROWS = 8;
+export const COLS = 8;
+
 export interface CellClick {
-  x: number;
-  y: number;
+  row: number;
+  col: number;
 }
 
 export interface CellState {
   index: number;
-  x: number;
-  y: number;
+  col: number;
+  row: number;
   color: Colors; // 0=None, 1=Black, 2=White
 }
 export interface BoardState {
@@ -28,18 +31,23 @@ export interface BoardState {
   turnCount: number;
 }
 
+export interface AppState {
+  page: string;
+  board: BoardState;
+}
+
 class Store extends EventEmitter {
   page = 'menu';
   board: BoardState = this.initBoard();
 
-  getState() {
+  getState(): AppState {
     return {
       page: this.page,
       board: this.board,
     };
   }
 
-  setPage(page: string) {
+  setPage(page: string): void {
     this.page = page;
     console.log(`page=${page}`);
 
@@ -51,38 +59,40 @@ class Store extends EventEmitter {
     this.emit('page_changed');
   }
 
-  setStone({ x, y }: CellClick) {
-    const current = this.board.cells[y][x].color;
+  setStone({ row, col }: CellClick): void {
+    const current = this.board.cells[row][col].color;
     if (current > 0) {
       return;
     }
-    this.board.cells[y][x].color = this.board.turn as number;
+    this.board.cells[row][col].color = this.board.turn as number;
     this.board.turnCount++;
     this.board.turn = this.board.turn === Turns.Black ? Turns.White : Turns.Black;
     this.emit('board_changed');
   }
 
-  initBoard() {
-    const cells = Array.from(new Array(8).keys()).map((_, y) => {
-      return Array.from(new Array(8).keys()).map((_, x) => {
+  initBoard(): BoardState {
+    const cells = Array.from(new Array(ROWS).keys()).map((_, row) => {
+      return Array.from(new Array(COLS).keys()).map((_, col) => {
         return {
-          index: y * 8 + x,
-          x: x,
-          y: y,
+          index: row * COLS + col,
+          col: col,
+          row: row,
           color: Colors.None,
-        };
+        } as CellState;
       });
     });
 
     // Set 4 stones as initial state.
-    cells[3][3].color = Colors.Black;
-    cells[3][4].color = Colors.White;
-    cells[4][3].color = Colors.White;
-    cells[4][4].color = Colors.Black;
+    const cx = COLS / 2 - 1;
+    const cy = ROWS / 2 - 1;
+    cells[cy][cx].color = Colors.Black;
+    cells[cy][cx + 1].color = Colors.White;
+    cells[cy + 1][cx].color = Colors.White;
+    cells[cy + 1][cx + 1].color = Colors.Black;
 
     return {
       cells,
-      turn: 1,
+      turn: Turns.Black,
       turnCount: 0,
     };
   }

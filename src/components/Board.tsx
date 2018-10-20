@@ -1,5 +1,5 @@
 import * as React from 'react';
-import store from '../store';
+import store, { ROWS, COLS, BoardState } from '../store';
 import Cell from './Cell';
 
 interface Props {
@@ -7,7 +7,7 @@ interface Props {
   height: number;
 }
 interface State {
-  board: any;
+  board: BoardState;
 }
 
 export default class Board extends React.Component<Props, State> {
@@ -32,8 +32,8 @@ export default class Board extends React.Component<Props, State> {
     const padding = 30;
     const rw = width - padding * 2;
     const rh = height - padding * 2;
-    const cw = rw / 8;
-    const ch = rh / 8;
+    const cw = rw / COLS;
+    const ch = rh / ROWS;
     const x0 = padding;
     const y0 = padding;
 
@@ -49,7 +49,7 @@ export default class Board extends React.Component<Props, State> {
       />
     ));
 
-    const hlines = Array.from(new Array(8).keys()).map((_, i) => (
+    const hlines = Array.from(new Array(ROWS).keys()).map((_, i) => (
       <line
         key={`h-${i}`}
         x1={x0}
@@ -61,37 +61,25 @@ export default class Board extends React.Component<Props, State> {
       />
     ));
 
-    const hletters = Array.from(new Array(8).keys()).map((_, i) => (
-      <text
-        key={`h-${i}`}
-        x={cw * i + cw / 2 + padding - 6}
-        y={padding / 2 + 7}
-        fontSize="16"
-        stroke="black">
+    const hletters = Array.from(new Array(COLS).keys()).map((_, i) => (
+      <text key={`h-${i}`} x={cw * i + cw / 2 + padding - 6} y={padding / 2 + 7} fontSize="16" stroke="black">
         {String.fromCharCode('a'.charCodeAt(0) + i)}
       </text>
     ));
 
-    const vletters = Array.from(new Array(8).keys()).map((_, i) => (
-      <text
-        key={`v-${i}`}
-        x={padding / 2 - 4}
-        y={ch * i + ch / 2 + padding + 7}
-        fontSize="16"
-        stroke="black">
+    const vletters = Array.from(new Array(ROWS).keys()).map((_, i) => (
+      <text key={`v-${i}`} x={padding / 2 - 4} y={ch * i + ch / 2 + padding + 7} fontSize="16" stroke="black">
         {String.fromCharCode('1'.charCodeAt(0) + i)}
       </text>
     ));
 
-    const cells = Array.from(new Array(8 * 8).keys()).map((_, i) => {
-      const col = i % 8;
-      const row = Math.floor(i / 8);
+    const cells = Array.from(new Array(ROWS * COLS).keys()).map((_, i) => {
+      const col = i % COLS;
+      const row = Math.floor(i / COLS);
       const x = x0 + cw * col;
       const y = y0 + ch * row;
       const color = board.cells[row][col].color;
-      return (
-        <Cell key={`cell-${i}`} x0={x} y0={y} width={cw} height={ch} index={i} color={color} />
-      );
+      return <Cell key={`cell-${i}`} x0={x} y0={y} width={cw} height={ch} index={i} color={color} />;
     });
 
     return (
