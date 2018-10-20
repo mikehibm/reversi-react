@@ -95,7 +95,7 @@ class Store extends EventEmitter {
     return {
       cells,
       turn: Turns.Black,
-      turnCount: 0,
+      turnCount: 1,
     };
   }
 }

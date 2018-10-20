@@ -1,6 +1,7 @@
 import * as React from 'react';
 import store from '../store';
 import Board from './Board';
+import Stats from './Stats';
 
 export default function Game() {
   const handleBack = () => {
@@ -15,6 +16,7 @@ export default function Game() {
         </button>
       </div>
       <Board width={440} height={440} />
+      <Stats />
     </div>
   );
 }
