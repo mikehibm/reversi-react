@@ -1,16 +1,16 @@
 import * as React from 'react';
-import store from './store';
+import store, { Pages } from './store';
 import Menu from './components/Menu';
 import Game from './components/Game';
 import './App.css';
 
 interface Props {}
 interface State {
-  page?: string;
+  page: Pages;
 }
 
 class App extends React.Component<Props, State> {
-  state = { page: 'menu' };
+  state = { page: 'menu' as Pages };
 
   onChangeStore = () => {
     const { page } = store.getState();
@@ -32,7 +32,7 @@ class App extends React.Component<Props, State> {
         <header className="App-header">
           <h1 className="App-title">Reversi</h1>
         </header>
-        {page === 'menu' ? <Menu /> : <Game />}
+        {page === 'game' ? <Game /> : <Menu />}
       </div>
     );
   }

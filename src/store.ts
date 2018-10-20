@@ -31,13 +31,15 @@ export interface BoardState {
   turnCount: number;
 }
 
+export type Pages = 'game' | 'menu';
+
 export interface AppState {
-  page: string;
+  page: Pages;
   board: BoardState;
 }
 
 class Store extends EventEmitter {
-  page = 'menu';
+  page: Pages = 'menu';
   board: BoardState = this.initBoard();
 
   getState(): AppState {
@@ -47,7 +49,7 @@ class Store extends EventEmitter {
     };
   }
 
-  setPage(page: string): void {
+  setPage(page: Pages): void {
     this.page = page;
     console.log(`page=${page}`);
 
