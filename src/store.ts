@@ -1,5 +1,16 @@
 import * as EventEmitter from 'eventemitter3';
 
+export enum Colors {
+  None = 0,
+  Black = 1,
+  White = 2,
+}
+
+export enum Turns {
+  Black = 1,
+  White = 2,
+}
+
 export interface CellClick {
   x: number;
   y: number;
@@ -9,11 +20,11 @@ export interface CellState {
   index: number;
   x: number;
   y: number;
-  color: number;
+  color: Colors; // 0=None, 1=Black, 2=White
 }
 export interface BoardState {
   cells: CellState[][];
-  turn: number;
+  turn: Turns;
   turnCount: number;
 }
 
@@ -45,9 +56,9 @@ class Store extends EventEmitter {
     if (current > 0) {
       return;
     }
-    this.board.cells[y][x].color = this.board.turn;
+    this.board.cells[y][x].color = this.board.turn as number;
     this.board.turnCount++;
-    this.board.turn = this.board.turn === 1 ? 2 : 1;
+    this.board.turn = this.board.turn === Turns.Black ? Turns.White : Turns.Black;
     this.emit('board_changed');
   }
 
@@ -58,10 +69,17 @@ class Store extends EventEmitter {
           index: y * 8 + x,
           x: x,
           y: y,
-          color: 0,
+          color: Colors.None,
         };
       });
     });
+
+    // Set 4 stones as initial state.
+    cells[3][3].color = Colors.Black;
+    cells[3][4].color = Colors.White;
+    cells[4][3].color = Colors.White;
+    cells[4][4].color = Colors.Black;
+
     return {
       cells,
       turn: 1,
