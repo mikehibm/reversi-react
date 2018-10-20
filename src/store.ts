@@ -31,6 +31,12 @@ class Store extends EventEmitter {
   setPage(page: string) {
     this.page = page;
     console.log(`page=${page}`);
+
+    // Initialize the board before going back to game screen.
+    if (page === 'game') {
+      this.board = this.initBoard();
+    }
+
     this.emit('page_changed');
   }
 
