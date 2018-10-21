@@ -68,10 +68,15 @@ class Store extends EventEmitter {
     if (!cell.placeable) {
       return;
     }
+
+    // Place a stone.
     cell.color = this.board.turn as number;
+
+    // Turn all the stones that are in the middle.
     cell.turnableCells.forEach((target) => {
       target.color = cell.color;
     });
+
     this.board.turnCount++;
     this.board.turn = this.board.turn === Turns.Black ? Turns.White : Turns.Black;
     this.updateCellStatus(this.board);
