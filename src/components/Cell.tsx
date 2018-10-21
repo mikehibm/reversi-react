@@ -8,9 +8,10 @@ interface Props {
   height: number;
   index: number;
   color: Colors;
+  placeable: boolean;
 }
 
-export default function Cell({ x0, y0, width, height, index, color }: Props) {
+export default function Cell({ x0, y0, width, height, index, color, placeable }: Props) {
   const colorNames = ['none', 'black', 'white'];
   const colorName = colorNames[color];
 
@@ -24,6 +25,16 @@ export default function Cell({ x0, y0, width, height, index, color }: Props) {
         stroke="none"
         fill={colorName}
       />
+      {placeable && (
+        <circle
+          className="Cell-placeable"
+          cx={x0 + width / 2}
+          cy={y0 + height / 2}
+          r={width * 0.06}
+          stroke="none"
+          fill={'yellow'}
+        />
+      )}
       <rect className="Cell-rect" x={x0} y={y0} width={width} height={height} stroke="none" fill="white" />
     </g>
   );

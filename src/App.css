@@ -85,3 +85,6 @@ button.primary:hover {
 .Cell-rect:hover {
   opacity: 0.4;
 }
+.Cell-placeable {
+  opacity: 0.2;
+}

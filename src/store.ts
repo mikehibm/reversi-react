@@ -21,9 +21,11 @@ export interface CellClick {
 
 export interface CellState {
   index: number;
-  col: number;
   row: number;
+  col: number;
   color: Colors; // 0=None, 1=Black, 2=White
+  placeable: boolean;
+  turnableCells: CellState[];
 }
 export interface BoardState {
   cells: CellState[][];
@@ -62,13 +64,17 @@ class Store extends EventEmitter {
   }
 
   setStone({ row, col }: CellClick): void {
-    const current = this.board.cells[row][col].color;
-    if (current > 0) {
+    const cell = this.board.cells[row][col];
+    if (!cell.placeable) {
       return;
     }
-    this.board.cells[row][col].color = this.board.turn as number;
+    cell.color = this.board.turn as number;
+    cell.turnableCells.forEach((target) => {
+      target.color = cell.color;
+    });
     this.board.turnCount++;
     this.board.turn = this.board.turn === Turns.Black ? Turns.White : Turns.Black;
+    this.updateCellStatus(this.board);
     this.emit('board_changed');
   }
 
@@ -92,11 +98,53 @@ class Store extends EventEmitter {
     cells[cy + 1][cx].color = Colors.White;
     cells[cy + 1][cx + 1].color = Colors.Black;
 
-    return {
+    const board = {
       cells,
       turn: Turns.Black,
       turnCount: 1,
     };
+
+    this.updateCellStatus(board);
+
+    return board;
+  }
+
+  updateCellStatus(board: BoardState) {
+    const cells = board.cells;
+    cells.forEach((row, rowIndex) => {
+      row.forEach((cell, colIndex) => {
+        cell.placeable = checkIfPlaceable(cells, rowIndex, colIndex, board.turn);
+      });
+    });
+
+    function checkIfPlaceable(cells: CellState[][], row: number, col: number, turn: Turns): boolean {
+      const cell = cells[row][col];
+      cell.turnableCells = [];
+      if (cell.color !== Colors.None) return false;
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          const foundCells = searchTurnableCells(dx, dy, cell, turn, []);
+          cell.turnableCells = cell.turnableCells.concat(foundCells);
+        }
+      }
+      return cell.turnableCells.length > 0;
+    }
+
+    function searchTurnableCells(dx: number, dy: number, cell: CellState, turn: Turns, arr: CellState[]): CellState[] {
+      if (dx === 0 && dy === 0) return [];
+      let r = cell.row + dy;
+      let c = cell.col + dx;
+      if (r < 0 || c < 0 || r > ROWS - 1 || c > COLS - 1) return [];
+      const opponent = turn === Turns.Black ? Turns.White : Turns.Black;
+
+      if (cells[r][c].color === (opponent as number)) {
+        arr.push(cells[r][c]);
+        return searchTurnableCells(dx, dy, cells[r][c], turn, arr);
+      } else if (cells[r][c].color === (turn as number)) {
+        return arr;
+      }
+      return [];
+    }
   }
 }
 
