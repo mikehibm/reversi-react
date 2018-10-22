@@ -75,9 +75,9 @@ button.primary:hover {
   cursor: pointer;
   /* opacity: 1; */
 }
-.Cell:hover {
-  /* opacity: 0.6; */
-}
+/* .Cell:hover {
+   opacity: 0.6;
+} */
 .Cell-rect {
   opacity: 0.1;
   transition: 200ms;
