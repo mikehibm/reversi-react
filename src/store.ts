@@ -31,6 +31,12 @@ export interface BoardState {
   cells: CellState[][];
   turn: Turns;
   turnCount: number;
+  blackCount: number;
+  whiteCount: number;
+  placeableCount: number;
+  finished: boolean;
+  currentPlayerName?: string;
+  winnerName?: string;
 }
 
 export type Pages = 'game' | 'menu';
@@ -45,10 +51,37 @@ class Store extends EventEmitter {
   board: BoardState = this.initBoard();
 
   getState(): AppState {
+    const names = ['', 'Black', 'White'];
+    const playerName = names[this.board.turn];
+    const winnerName = this.board.finished ? names[this.getWinner(this.board)] : '';
+
     return {
       page: this.page,
-      board: this.board,
+      board: {
+        cells: cloneCells(this.board.cells),
+        turn: this.board.turn,
+        turnCount: this.board.turnCount,
+        blackCount: this.board.blackCount,
+        whiteCount: this.board.whiteCount,
+        placeableCount: this.board.placeableCount,
+        finished: this.board.finished,
+        currentPlayerName: playerName,
+        winnerName: winnerName,
+      },
     };
+
+    function cloneCells(cells: CellState[][]): CellState[][] {
+      return cells.map((row, rowIndex) => {
+        return row.map((cell, colIndex) => ({
+          index: cell.index,
+          row: cell.row,
+          col: cell.col,
+          color: cell.color,
+          placeable: cell.placeable,
+          turnableCells: [...cell.turnableCells],
+        }));
+      });
+    }
   }
 
   setPage(page: Pages): void {
@@ -77,10 +110,18 @@ class Store extends EventEmitter {
       target.color = cell.color;
     });
 
+    this.changeTurn();
+  }
+
+  changeTurn(): void {
     this.board.turnCount++;
     this.board.turn = this.board.turn === Turns.Black ? Turns.White : Turns.Black;
     this.updateCellStatus(this.board);
     this.emit('board_changed');
+  }
+
+  skipTurn(): void {
+    this.changeTurn();
   }
 
   initBoard(): BoardState {
@@ -107,6 +148,10 @@ class Store extends EventEmitter {
       cells,
       turn: Turns.Black,
       turnCount: 1,
+      blackCount: 0,
+      whiteCount: 0,
+      placeableCount: 0,
+      finished: false,
     };
 
     this.updateCellStatus(board);
@@ -116,11 +161,18 @@ class Store extends EventEmitter {
 
   updateCellStatus(board: BoardState) {
     const cells = board.cells;
+    let blankCount = 0;
     cells.forEach((row, rowIndex) => {
       row.forEach((cell, colIndex) => {
         cell.placeable = checkIfPlaceable(cells, rowIndex, colIndex, board.turn);
+        cell.color === Colors.None && blankCount++;
       });
     });
+
+    board.blackCount = this.countColor(board, Colors.Black);
+    board.whiteCount = this.countColor(board, Colors.White);
+    board.placeableCount = this.getPlaceableCount(board);
+    board.finished = blankCount === 0;
 
     function checkIfPlaceable(cells: CellState[][], row: number, col: number, turn: Turns): boolean {
       const cell = cells[row][col];
@@ -150,6 +202,33 @@ class Store extends EventEmitter {
       }
       return [];
     }
+  }
+
+  getPlaceableCount(board: BoardState): number {
+    let count = 0;
+    const cells = board.cells;
+    cells.forEach((row, rowIndex) => {
+      row.forEach((cell, colIndex) => {
+        if (cell.placeable) count++;
+      });
+    });
+    return count;
+  }
+
+  countColor(board: BoardState, color: Colors): number {
+    let count = 0;
+    const cells = board.cells;
+    cells.forEach((row, rowIndex) => {
+      row.forEach((cell, colIndex) => {
+        if (cell.color === color) count++;
+      });
+    });
+    return count;
+  }
+
+  getWinner(board: BoardState): Colors {
+    const { blackCount, whiteCount } = this.board;
+    return blackCount === whiteCount ? Colors.None : blackCount > whiteCount ? Colors.Black : Colors.White;
   }
 }
 
