@@ -7,11 +7,11 @@ export default function Menu() {
   };
 
   return (
-    <div>
+    <>
       <h1>Let's start!</h1>
       <button className="primary" onClick={handleStart}>
         Start
       </button>
-    </div>
+    </>
   );
 }
