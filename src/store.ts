@@ -139,10 +139,10 @@ class Store extends EventEmitter {
     // Set 4 stones as initial state.
     const cx = COLS / 2 - 1;
     const cy = ROWS / 2 - 1;
-    cells[cy][cx].color = Colors.Black;
-    cells[cy][cx + 1].color = Colors.White;
-    cells[cy + 1][cx].color = Colors.White;
-    cells[cy + 1][cx + 1].color = Colors.Black;
+    cells[cy][cx].color = Colors.White;
+    cells[cy][cx + 1].color = Colors.Black;
+    cells[cy + 1][cx].color = Colors.Black;
+    cells[cy + 1][cx + 1].color = Colors.White;
 
     const board = {
       cells,
