@@ -6,11 +6,6 @@ export enum Colors {
   White = 2,
 }
 
-export enum Turns {
-  Black = 1,
-  White = 2,
-}
-
 export const ROWS = 8;
 export const COLS = 8;
 
@@ -29,7 +24,7 @@ export interface CellState {
 }
 export interface BoardState {
   cells: CellState[][];
-  turn: Turns;
+  turn: Colors;
   turnCount: number;
   blackCount: number;
   whiteCount: number;
@@ -103,7 +98,7 @@ class Store extends EventEmitter {
     }
 
     // Place a stone.
-    cell.color = this.board.turn as number;
+    cell.color = this.board.turn;
 
     // Turn all the stones that are in the middle.
     cell.turnableCells.forEach((target) => {
@@ -115,7 +110,7 @@ class Store extends EventEmitter {
 
   changeTurn(): void {
     this.board.turnCount++;
-    this.board.turn = this.board.turn === Turns.Black ? Turns.White : Turns.Black;
+    this.board.turn = this.board.turn === Colors.Black ? Colors.White : Colors.Black;
     this.updateCellStatus(this.board);
     this.emit('board_changed');
   }
@@ -146,7 +141,7 @@ class Store extends EventEmitter {
 
     const board = {
       cells,
-      turn: Turns.Black,
+      turn: Colors.Black,
       turnCount: 1,
       blackCount: 0,
       whiteCount: 0,
@@ -161,21 +156,18 @@ class Store extends EventEmitter {
 
   updateCellStatus(board: BoardState) {
     const cells = board.cells;
-    let blankCount = 0;
     cells.forEach((row, rowIndex) => {
       row.forEach((cell, colIndex) => {
-        cell.placeable = checkIfPlaceable(cells, rowIndex, colIndex, board.turn);
-        cell.color === Colors.None && blankCount++;
+        cell.placeable = checkIfPlaceable(cell, board.turn);
       });
     });
 
     board.blackCount = this.countColor(board, Colors.Black);
     board.whiteCount = this.countColor(board, Colors.White);
+    board.finished = this.countColor(board, Colors.None) === 0;
     board.placeableCount = this.getPlaceableCount(board);
-    board.finished = blankCount === 0;
 
-    function checkIfPlaceable(cells: CellState[][], row: number, col: number, turn: Turns): boolean {
-      const cell = cells[row][col];
+    function checkIfPlaceable(cell: CellState, turn: Colors): boolean {
       cell.turnableCells = [];
       if (cell.color !== Colors.None) return false;
       for (let dy = -1; dy <= 1; dy++) {
@@ -187,17 +179,18 @@ class Store extends EventEmitter {
       return cell.turnableCells.length > 0;
     }
 
-    function searchTurnableCells(dx: number, dy: number, cell: CellState, turn: Turns, arr: CellState[]): CellState[] {
+    function searchTurnableCells(dx: number, dy: number, cell: CellState, turn: Colors, arr: CellState[]): CellState[] {
       if (dx === 0 && dy === 0) return [];
-      let r = cell.row + dy;
-      let c = cell.col + dx;
+      const r = cell.row + dy;
+      const c = cell.col + dx;
       if (r < 0 || c < 0 || r > ROWS - 1 || c > COLS - 1) return [];
-      const opponent = turn === Turns.Black ? Turns.White : Turns.Black;
+      const opponentColor = turn === Colors.Black ? Colors.White : Colors.Black;
+      const nextCell = cells[r][c];
 
-      if (cells[r][c].color === (opponent as number)) {
-        arr.push(cells[r][c]);
-        return searchTurnableCells(dx, dy, cells[r][c], turn, arr);
-      } else if (cells[r][c].color === (turn as number)) {
+      if (nextCell.color === opponentColor) {
+        arr.push(nextCell);
+        return searchTurnableCells(dx, dy, nextCell, turn, arr);
+      } else if (nextCell.color === turn) {
         return arr;
       }
       return [];
