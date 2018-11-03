@@ -1,5 +1,5 @@
 import * as React from 'react';
-import store, { CellClick, Colors, COLS } from '../store';
+import store, { Position, Colors, COLS } from '../store';
 
 interface Props {
   x0: number;
@@ -41,7 +41,7 @@ export default function Cell({ x0, y0, width, height, index, color, placeable }:
 }
 
 function handleClick(index: number) {
-  const payload: CellClick = {
+  const payload: Position = {
     row: Math.floor(index / COLS),
     col: index % COLS,
   };
