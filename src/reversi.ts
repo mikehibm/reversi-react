@@ -28,6 +28,7 @@ export interface BoardState {
   whiteCount: number;
   placeableCount: number;
   finished: boolean;
+  lastMove: Position;
   currentPlayerName?: string;
   winnerName?: string;
 }
@@ -58,21 +59,23 @@ export function initBoard(): BoardState {
 
   const board = {
     cells,
-    turn: Colors.Black,
-    turnCount: 1,
+    turn: Colors.White,
+    turnCount: 0,
     blackCount: 0,
     whiteCount: 0,
     placeableCount: 0,
     finished: false,
+    lastMove: { row: -1, col: -1 },
   };
 
-  return updateBoardStatus(board);
+  return getNextTurn(board);
 }
 
 export function cloneBoard(board: BoardState): BoardState {
   return {
     ...board,
     cells: cloneCells(board.cells),
+    lastMove: board.lastMove && { ...board.lastMove },
   };
 }
 
@@ -85,7 +88,10 @@ function cloneCells(cells: CellState[][]): CellState[][] {
   });
 }
 
-export function updateBoardStatus(board: BoardState): BoardState {
+export function getNextTurn(board: BoardState): BoardState {
+  board.turnCount++;
+  board.turn = board.turn === Colors.Black ? Colors.White : Colors.Black;
+
   let countWhite = 0,
     countBlack = 0,
     countNone = 0,
@@ -101,12 +107,15 @@ export function updateBoardStatus(board: BoardState): BoardState {
     });
   });
 
+  board.placeableCount = countPlaceable;
   board.whiteCount = countWhite;
   board.blackCount = countBlack;
-  board.finished = countNone === 0 || countWhite === 0 || countBlack === 0;
-  board.placeableCount = countPlaceable;
+  board.finished =
+    countNone === 0 || countWhite === 0 || countBlack === 0 || (board.lastMove.row < 0 && board.placeableCount === 0);
   board.currentPlayerName = playerNames[board.turn];
-  board.winnerName = board.finished ? playerNames[getWinner(board)] : '';
+
+  const winner = countBlack === countWhite ? Colors.None : countBlack > countWhite ? Colors.Black : Colors.White;
+  board.winnerName = playerNames[winner];
 
   return board;
 }
@@ -145,9 +154,4 @@ function searchTurnableCells(
     return arr;
   }
   return [];
-}
-
-function getWinner(board: BoardState): Colors {
-  const { blackCount, whiteCount } = board;
-  return blackCount === whiteCount ? Colors.None : blackCount > whiteCount ? Colors.Black : Colors.White;
 }

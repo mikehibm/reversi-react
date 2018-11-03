@@ -1,5 +1,5 @@
 import * as EventEmitter from 'eventemitter3';
-import { Colors, Position, BoardState, initBoard, cloneBoard, updateBoardStatus } from './reversi';
+import { Position, BoardState, initBoard, cloneBoard, getNextTurn } from './reversi';
 
 export type Pages = 'game' | 'menu';
 
@@ -36,25 +36,21 @@ class Store extends EventEmitter {
 
     // Place a stone.
     cell.color = newBoard.turn;
+    newBoard.lastMove = { row, col };
 
     // Turn all the stones that are in the middle.
     cell.turnableCells.forEach(({ row, col }) => {
       newBoard.cells[row][col].color = cell.color;
     });
 
-    this.changeTurn(newBoard);
+    this.state = { ...this.getState(), board: getNextTurn(newBoard) };
+    this.emit('board_changed');
   }
 
   public skipTurn(): void {
     const newBoard = cloneBoard(this.state.board);
-    this.changeTurn(newBoard);
-  }
-
-  private changeTurn(board: BoardState): void {
-    board.turnCount++;
-    board.turn = board.turn === Colors.Black ? Colors.White : Colors.Black;
-    board = updateBoardStatus(board);
-    this.state = { ...this.getState(), board };
+    newBoard.lastMove = { row: -1, col: -1 }; // (-1, -1)は「パス」を示す。
+    this.state = { ...this.getState(), board: getNextTurn(newBoard) };
     this.emit('board_changed');
   }
 }
