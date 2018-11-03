@@ -1,5 +1,6 @@
 import * as React from 'react';
-import store, { ROWS, COLS, BoardState } from '../store';
+import store from '../store';
+import { ROWS, COLS, BoardState } from '../reversi';
 import Cell from './Cell';
 
 interface Props {

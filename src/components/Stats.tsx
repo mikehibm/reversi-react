@@ -1,5 +1,6 @@
 import * as React from 'react';
-import store, { BoardState } from '../store';
+import store from '../store';
+import { BoardState } from '../reversi';
 
 interface Props {}
 interface State {

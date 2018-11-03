@@ -1,5 +1,6 @@
 import * as React from 'react';
-import store, { Position, Colors, COLS } from '../store';
+import store from '../store';
+import { Position, Colors, COLS } from '../reversi';
 
 interface Props {
   x0: number;
