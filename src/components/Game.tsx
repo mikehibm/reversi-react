@@ -1,5 +1,5 @@
 import * as React from 'react';
-import store from '../store';
+import store, { EV_BOARD_CHANGED } from '../store';
 import { BoardState } from '../reversi';
 import Board from './Board';
 import Stats from './Stats';
@@ -27,10 +27,10 @@ export default class Game extends React.Component<{}, State> {
     }
   };
   componentDidMount() {
-    store.on('board_changed', this.onChangeStore);
+    store.on(EV_BOARD_CHANGED, this.onChangeStore);
   }
   componentWillUnmount() {
-    store.off('board_changed', this.onChangeStore);
+    store.off(EV_BOARD_CHANGED, this.onChangeStore);
   }
 
   handleBack = () => {
@@ -45,7 +45,7 @@ export default class Game extends React.Component<{}, State> {
             Back
           </button>
         </div>
-        <Board width={440} height={440} />
+        <Board width={420} height={420} />
         <Stats />
       </div>
     );

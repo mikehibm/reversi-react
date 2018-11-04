@@ -1,5 +1,5 @@
 import * as React from 'react';
-import store, { Pages } from './store';
+import store, { Pages, EV_PAGE_CHANGED } from './store';
 import Menu from './components/Menu';
 import Game from './components/Game';
 import './App.css';
@@ -18,10 +18,10 @@ class App extends React.Component<Props, State> {
   };
 
   componentDidMount() {
-    store.on('page_changed', this.onChangeStore);
+    store.on(EV_PAGE_CHANGED, this.onChangeStore);
   }
   componentWillUnmount() {
-    store.off('page_changed', this.onChangeStore);
+    store.off(EV_PAGE_CHANGED, this.onChangeStore);
   }
 
   public render() {

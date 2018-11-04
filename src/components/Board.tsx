@@ -1,5 +1,5 @@
 import * as React from 'react';
-import store from '../store';
+import store, { EV_BOARD_CHANGED } from '../store';
 import { ROWS, COLS, BoardState } from '../reversi';
 import Cell from './Cell';
 
@@ -19,10 +19,10 @@ export default class Board extends React.Component<Props, State> {
     this.setState({ board });
   };
   componentDidMount() {
-    store.on('board_changed', this.onChangeStore);
+    store.on(EV_BOARD_CHANGED, this.onChangeStore);
   }
   componentWillUnmount() {
-    store.off('board_changed', this.onChangeStore);
+    store.off(EV_BOARD_CHANGED, this.onChangeStore);
   }
 
   render() {

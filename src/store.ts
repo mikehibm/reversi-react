@@ -3,6 +3,9 @@ import { Position, BoardState, initBoard, cloneBoard, getNextTurn } from './reve
 
 export type Pages = 'game' | 'menu';
 
+export const EV_PAGE_CHANGED = 'page_changed';
+export const EV_BOARD_CHANGED = 'board_changed';
+
 export interface AppState {
   page: Pages;
   board: BoardState;
@@ -23,7 +26,7 @@ class Store extends EventEmitter {
     const board = page === 'game' ? initBoard() : this.state.board;
 
     this.state = { ...this.getState(), page, board };
-    this.emit('page_changed');
+    this.emit(EV_PAGE_CHANGED);
   }
 
   public setStone({ row, col }: Position): void {
@@ -44,14 +47,14 @@ class Store extends EventEmitter {
     });
 
     this.state = { ...this.getState(), board: getNextTurn(newBoard) };
-    this.emit('board_changed');
+    this.emit(EV_BOARD_CHANGED);
   }
 
   public skipTurn(): void {
     const newBoard = cloneBoard(this.state.board);
     newBoard.lastMove = { row: -1, col: -1 }; // (-1, -1)は「パス」を示す。
     this.state = { ...this.getState(), board: getNextTurn(newBoard) };
-    this.emit('board_changed');
+    this.emit(EV_BOARD_CHANGED);
   }
 }
 

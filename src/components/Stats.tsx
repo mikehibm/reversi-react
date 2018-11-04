@@ -1,5 +1,5 @@
 import * as React from 'react';
-import store from '../store';
+import store, { EV_BOARD_CHANGED } from '../store';
 import { BoardState } from '../reversi';
 
 interface Props {}
@@ -15,10 +15,10 @@ export default class Stats extends React.Component<Props, State> {
     this.setState({ board });
   };
   componentDidMount() {
-    store.on('board_changed', this.onChangeStore);
+    store.on(EV_BOARD_CHANGED, this.onChangeStore);
   }
   componentWillUnmount() {
-    store.off('board_changed', this.onChangeStore);
+    store.off(EV_BOARD_CHANGED, this.onChangeStore);
   }
 
   render() {
