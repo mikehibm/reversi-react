@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "react": "^16.5.2",
-    "react-dom": "^16.5.2",
+    "react": "^16.6.3",
+    "react-dom": "^16.6.3",
     "react-scripts-ts": "3.1.0"
   },
   "scripts": {
@@ -15,10 +15,10 @@
     "deploy:now": "npm run build && now build -p -n reversi"
   },
   "devDependencies": {
-    "@types/jest": "^23.3.5",
-    "@types/node": "^10.11.7",
-    "@types/react": "^16.4.16",
+    "@types/jest": "^23.3.9",
+    "@types/node": "^10.12.7",
+    "@types/react": "^16.7.5",
     "@types/react-dom": "^16.0.9",
-    "typescript": "^3.1.2"
+    "typescript": "^3.1.6"
   }
 }
