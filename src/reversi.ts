@@ -20,22 +20,29 @@ export interface CellState {
   placeable: boolean;
   turnableCells: Position[];
 }
+
+export interface Player {
+  name?: string;
+  isHuman: boolean;
+  think?: (board: BoardState) => Promise<Position>;
+}
+
 export interface BoardState {
   cells: CellState[][];
-  turn: Colors;
+  turn: Colors; // 1=Black, 2=White
   turnCount: number;
   blackCount: number;
   whiteCount: number;
   placeableCount: number;
   finished: boolean;
   lastMove: Position;
-  currentPlayerName?: string;
-  winnerName?: string;
+  currentPlayer: Player;
+  winner?: Player;
+  blackPlayer: Player;
+  whitePlayer: Player;
 }
 
-const playerNames = ['', 'Black', 'White'];
-
-export function initBoard(): BoardState {
+export function initBoard(blackPlayer: Player, whitePlayer: Player): BoardState {
   const cells = Array.from(new Array(ROWS).keys()).map((_, row) => {
     return Array.from(new Array(COLS).keys()).map((_, col) => {
       return {
@@ -66,6 +73,9 @@ export function initBoard(): BoardState {
     placeableCount: 0,
     finished: false,
     lastMove: { row: -1, col: -1 },
+    currentPlayer: blackPlayer,
+    blackPlayer: blackPlayer,
+    whitePlayer: whitePlayer,
   };
 
   return getNextTurn(board);
@@ -112,10 +122,10 @@ export function getNextTurn(board: BoardState): BoardState {
   board.blackCount = countBlack;
   board.finished =
     countNone === 0 || countWhite === 0 || countBlack === 0 || (board.lastMove.row < 0 && board.placeableCount === 0);
-  board.currentPlayerName = playerNames[board.turn];
+  board.currentPlayer = board.turn === Colors.Black ? board.blackPlayer : board.whitePlayer;
 
-  const winner = countBlack === countWhite ? Colors.None : countBlack > countWhite ? Colors.Black : Colors.White;
-  board.winnerName = playerNames[winner];
+  board.winner =
+    countBlack === countWhite ? undefined : countBlack > countWhite ? board.blackPlayer : board.whitePlayer;
 
   return board;
 }

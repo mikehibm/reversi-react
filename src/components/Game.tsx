@@ -11,19 +11,27 @@ interface State {
 export default class Game extends React.Component<{}, State> {
   state = { board: store.getState().board };
 
-  onChangeStore = () => {
+  onChangeStore = async () => {
     const { board } = store.getState();
     this.setState({ board });
 
     if (board.finished) {
       setTimeout(() => {
-        alert(`Finished! Winner is ${board.winnerName}`);
+        if (board.winner) {
+          alert(`Finished! Winner is ${board.winner.name}`);
+        } else {
+          alert(`Finished! DRAW GAME!`);
+        }
       }, 100);
     } else if (board.placeableCount === 0) {
       setTimeout(() => {
-        alert(`${board.currentPlayerName} must pass this turn.`);
+        alert(`${board.currentPlayer.name} must pass this turn.`);
         store.skipTurn();
       }, 100);
+    } else if (!board.currentPlayer.isHuman && board.currentPlayer.think) {
+      const result = await board.currentPlayer.think(board);
+      console.log(result);
+      store.setStone(result);
     }
   };
   componentDidMount() {

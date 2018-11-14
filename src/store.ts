@@ -1,5 +1,7 @@
 import * as EventEmitter from 'eventemitter3';
 import { Position, BoardState, initBoard, cloneBoard, getNextTurn } from './reversi';
+import humanPlayer from './players/humanPlayer';
+import computerPlayer0 from './players/computerPlayer0';
 
 export type Pages = 'game' | 'menu';
 
@@ -14,8 +16,12 @@ export interface AppState {
 class Store extends EventEmitter {
   private state: AppState = {
     page: 'menu',
-    board: initBoard(),
+    board: this.getInitialBoard(),
   };
+
+  private getInitialBoard(): BoardState {
+    return initBoard(humanPlayer('Black'), computerPlayer0('White'));
+  }
 
   public getState(): AppState {
     return this.state;
@@ -23,7 +29,7 @@ class Store extends EventEmitter {
 
   public setPage(page: Pages): void {
     // Initialize the board before going back to game screen.
-    const board = page === 'game' ? initBoard() : this.state.board;
+    const board = page === 'game' ? this.getInitialBoard() : this.state.board;
 
     this.state = { ...this.getState(), page, board };
     this.emit(EV_PAGE_CHANGED);

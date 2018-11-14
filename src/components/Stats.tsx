@@ -23,11 +23,11 @@ export default class Stats extends React.Component<Props, State> {
 
   render() {
     const { board } = this.state;
-    const { currentPlayerName, turnCount, blackCount, whiteCount } = board;
+    const { currentPlayer, turnCount, blackCount, whiteCount } = board;
     return (
       <>
         <p>
-          Turn {turnCount}: {currentPlayerName}
+          Turn {turnCount}: {currentPlayer.name}
         </p>
         <p>
           Black: {blackCount}, White: {whiteCount}
