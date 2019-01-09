@@ -5,11 +5,11 @@ declare function postMessage(obj: any): void;
 
 const WAIT_MSEC = 300;
 
-const myWorkerFunc = () => {
+const thinkProc = () => {
   self.addEventListener(
     'message',
     function(e) {
-      console.log('Worker called: ', e.data.board);
+      console.log('Worker called: ', e.data);
       const board: BoardState = e.data.board;
       let result = { row: -1, col: -1 };
       const placeableCells: CellState[] = [];
@@ -30,23 +30,16 @@ const myWorkerFunc = () => {
     false
   );
 };
-const myWorker = createWorker(myWorkerFunc);
+const myWorker = createWorker(thinkProc);
 
 export default function computerPlayer0(name: string): Player {
   return {
     name: name || 'CPU-0',
     isHuman: false,
     think: async (board: BoardState) => {
-      return await new Promise<Position>((resolve) => {
-        const func = async (result: any) => {
-          console.log('result.data=', result.data);
-          myWorker.removeEventListener('message', func);
-          await wait(WAIT_MSEC);
-          resolve(result.data as Position);
-        };
-        myWorker.addEventListener('message', func);
-        myWorker.postMessage({ board: { cells: board.cells } });
-      });
+      const result = await myWorker.execute({ board: { cells: board.cells } });
+      await wait(WAIT_MSEC);
+      return result as Position;
     },
   };
 }

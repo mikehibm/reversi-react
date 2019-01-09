@@ -1,7 +1,24 @@
-export default (workerFunc: () => void) => {
-  let code = workerFunc.toString();
-  code = code.substring(code.indexOf('{') + 1, code.lastIndexOf('}'));
+export class MyWorker {
+  _worker: Worker;
+  constructor(worker: Worker) {
+    this._worker = worker;
+  }
+  async execute(data: any): Promise<any> {
+    return await new Promise<any>((resolve) => {
+      const func = async (result: any) => {
+        console.log('result.data=', result.data);
+        this._worker.removeEventListener('message', func);
+        resolve(result.data);
+      };
+      this._worker.addEventListener('message', func);
+      this._worker.postMessage(data);
+    });
+  }
+}
 
+export default (func: () => void) => {
+  let code = func.toString();
+  code = code.substring(code.indexOf('{') + 1, code.lastIndexOf('}'));
   const blob = new Blob([code], { type: 'application/javascript' });
-  return new Worker(URL.createObjectURL(blob));
+  return new MyWorker(new Worker(URL.createObjectURL(blob)));
 };
