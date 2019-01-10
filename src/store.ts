@@ -1,4 +1,4 @@
-import * as EventEmitter from 'eventemitter3';
+import EventEmitter from 'eventemitter3';
 import { Position, BoardState, initBoard, cloneBoard, getNextTurn } from './reversi';
 import humanPlayer from './players/humanPlayer';
 import computerPlayer0 from './players/computerPlayer0';
