@@ -3,7 +3,7 @@ import { BoardState, Player, CellState, Position } from '../reversi';
 import createWorker from '../createWorker';
 declare function postMessage(obj: any): void;
 
-const WAIT_MSEC = 300;
+const WAIT_MSEC = 400 * 2;
 
 const thinkProc = () => {
   self.addEventListener(
@@ -30,14 +30,14 @@ const thinkProc = () => {
     false
   );
 };
-const myWorker = createWorker(thinkProc);
+const thinkWorker = createWorker(thinkProc);
 
-export default function computerPlayer0(name: string): Player {
+export default function(name?: string): Player {
   return {
-    name: name || 'CPU-0',
+    name: name || 'CPU-2',
     isHuman: false,
     think: async (board: BoardState) => {
-      const result = await myWorker.execute({ board: { cells: board.cells } });
+      const result = await thinkWorker.execute({ board: { cells: board.cells } });
       await wait(WAIT_MSEC);
       return result as Position;
     },

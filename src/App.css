@@ -31,6 +31,19 @@
   }
 }
 
+.menu ul {
+  padding-left: 0;
+}
+
+.menu ul li {
+  list-style-type: none;
+  margin-top: 1em;
+}
+
+.menu li button {
+  min-width: 8em;
+}
+
 button {
   padding: 1em;
   border: none;

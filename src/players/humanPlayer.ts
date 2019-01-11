@@ -1,6 +1,6 @@
 import { Player } from '../reversi';
 
-export default function humanPlayer(name: string): Player {
+export default function humanPlayer(name?: string): Player {
   return {
     name: name || 'You',
     isHuman: true,

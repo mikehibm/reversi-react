@@ -1,7 +1,9 @@
 import EventEmitter from 'eventemitter3';
-import { Position, BoardState, initBoard, cloneBoard, getNextTurn } from './reversi';
+import { Position, BoardState, initBoard, cloneBoard, getNextTurn, Player } from './reversi';
 import humanPlayer from './players/humanPlayer';
-import computerPlayer0 from './players/computerPlayer0';
+import computerPlayer1 from './players/computerPlayer1';
+import computerPlayer2 from './players/computerPlayer2';
+import computerPlayer3 from './players/computerPlayer3';
 
 export type Pages = 'game' | 'menu';
 
@@ -13,25 +15,30 @@ export interface AppState {
   board: BoardState;
 }
 
+export const computerPlayers = [computerPlayer1, computerPlayer2, computerPlayer3];
+
 class Store extends EventEmitter {
   private state: AppState = {
     page: 'menu',
-    board: this.getInitialBoard(),
+    board: this.getInitialBoard(humanPlayer(), computerPlayer1()),
   };
 
-  private getInitialBoard(): BoardState {
-    return initBoard(humanPlayer('Black'), computerPlayer0('White'));
+  private getInitialBoard(player1: Player, player2: Player): BoardState {
+    return initBoard(player1, player2);
   }
 
   public getState(): AppState {
     return this.state;
   }
 
-  public setPage(page: Pages): void {
-    // Initialize the board before going back to game screen.
-    const board = page === 'game' ? this.getInitialBoard() : this.state.board;
+  public startGame(player1: Player, player2: Player) {
+    const board = this.getInitialBoard(player1, player2);
+    this.state = { ...this.getState(), board };
+    this.setPage('game');
+  }
 
-    this.state = { ...this.getState(), page, board };
+  public setPage(page: Pages): void {
+    this.state = { ...this.getState(), page };
     this.emit(EV_PAGE_CHANGED);
   }
 
