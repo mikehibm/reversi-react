@@ -1,4 +1,4 @@
-export class MyWorker {
+class MyWorker {
   _worker: Worker;
   constructor(worker: Worker) {
     this._worker = worker;
