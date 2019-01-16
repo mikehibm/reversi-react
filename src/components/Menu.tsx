@@ -1,7 +1,7 @@
-import * as React from "react";
-import store, { computerPlayers } from "../store";
-import { Player } from "../reversi";
-import humanPlayer from "../players/humanPlayer";
+import * as React from 'react';
+import store, { computerPlayers } from '../store';
+import { Player } from '../reversi';
+import humanPlayer from '../players/humanPlayer';
 
 export default function Menu() {
   const human = humanPlayer();
