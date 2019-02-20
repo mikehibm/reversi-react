@@ -11,7 +11,7 @@
   "scripts": {
     "start": "react-scripts start",
     "worker": "tsc -p tsconfig.worker.json",
-    "build": "react-scripts build",
+    "build": "npm run worker && react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "deploy:now": "npm run build && now build -p -n reversi"

@@ -1,9 +1,7 @@
 import EventEmitter from 'eventemitter3';
 import { Position, BoardState, initBoard, cloneBoard, getNextTurn, Player, placeStoneAndGetNextTurn } from './reversi';
 import humanPlayer from './players/humanPlayer';
-import computerPlayer1 from './players/computerPlayer1';
-import computerPlayer2 from './players/computerPlayer2';
-import computerPlayer3 from './players/computerPlayer3';
+import computerPlayer from './players/computerPlayer';
 
 export type Pages = 'game' | 'menu';
 
@@ -15,12 +13,10 @@ export interface AppState {
   board: BoardState;
 }
 
-export const computerPlayers = [computerPlayer1, computerPlayer2, computerPlayer3];
-
 class Store extends EventEmitter {
   private state: AppState = {
     page: 'menu',
-    board: this.getInitialBoard(humanPlayer(), computerPlayer1()),
+    board: this.getInitialBoard(humanPlayer(), computerPlayer('cpu1')),
   };
 
   private getInitialBoard(player1: Player, player2: Player): BoardState {

@@ -17,7 +17,7 @@ self.addEventListener(
       [100, -50, 10, 0, 0, 10, -50, 100],
     ];
 
-    console.log('CPU1 Worker called: ', e.data);
+    console.log('CPU3 Worker called: ', e.data);
     const board: BoardState = e.data.board;
     const color = board.turn;
     const placeableCells: CellState[] = [];

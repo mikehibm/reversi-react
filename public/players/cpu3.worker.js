@@ -10,7 +10,7 @@ self.addEventListener('message', function (e) {
         [-50, -70, -5, -10, -10, -5, -70, -50],
         [100, -50, 10, 0, 0, 10, -50, 100],
     ];
-    console.log('CPU1 Worker called: ', e.data);
+    console.log('CPU3 Worker called: ', e.data);
     var board = e.data.board;
     var color = board.turn;
     var placeableCells = [];

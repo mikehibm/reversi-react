@@ -1,4 +1,4 @@
-export class MyWorker {
+export class WorkerWrapper {
   _worker: Worker;
   constructor(worker: Worker) {
     this._worker = worker;
@@ -20,5 +20,5 @@ export default (func: () => void) => {
   let code = func.toString();
   code = code.substring(code.indexOf('{') + 1, code.lastIndexOf('}'));
   const blob = new Blob([code], { type: 'application/javascript' });
-  return new MyWorker(new Worker(URL.createObjectURL(blob)));
+  return new WorkerWrapper(new Worker(URL.createObjectURL(blob)));
 };

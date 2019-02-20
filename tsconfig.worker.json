@@ -16,8 +16,6 @@
     "downlevelIteration": true,
     "removeComments": true,
     "outDir": "public"
-    // "outFile": "public/cpu1.worker.js"
   },
-  "include": ["src/reversi.worker.ts"],
-  "files": ["src/players/cpu1.worker.ts"]
+  "include": ["src/players/*.worker.ts", "src/reversi.worker.ts"]
 }
