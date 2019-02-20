@@ -10,6 +10,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "worker": "tsc -p tsconfig.worker.json",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
@@ -24,5 +25,10 @@
     "tslint": "^5.12.0",
     "typescript": "^3.2.2"
   },
-  "browserslist": [">0.2%", "not dead", "not ie <= 11", "not op_mini all"]
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }

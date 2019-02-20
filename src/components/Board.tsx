@@ -27,8 +27,6 @@ export default class Board extends React.Component<Props, State> {
 
   render() {
     const { board } = this.state;
-    console.log(board);
-
     const { width, height } = this.props;
     const padding = 30;
     const rw = width - padding * 2;

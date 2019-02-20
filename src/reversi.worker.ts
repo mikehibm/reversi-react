@@ -1,34 +1,34 @@
-export enum Colors {
+enum Colors {
   None = 0,
   Black = 1,
   White = 2,
 }
 
-export const ROWS = 8;
-export const COLS = 8;
+const ROWS = 8;
+const COLS = 8;
 
-export interface Position {
+interface MyPosition {
   row: number;
   col: number;
 }
 
-export interface CellState {
+interface CellState {
   index: number;
   row: number;
   col: number;
   color: Colors; // 0=None, 1=Black, 2=White
   placeable: boolean;
-  turnableCells: Position[];
+  turnableCells: MyPosition[];
   value: number;
 }
 
-export interface Player {
+interface Player {
   name?: string;
   isHuman: boolean;
-  think?: (board: BoardState) => Promise<Position>;
+  think?: (board: BoardState) => Promise<MyPosition>;
 }
 
-export interface BoardState {
+interface BoardState {
   cells: CellState[][];
   turn: Colors; // 1=Black, 2=White
   turnCount: number;
@@ -36,14 +36,14 @@ export interface BoardState {
   whiteCount: number;
   placeableCount: number;
   finished: boolean;
-  lastMove: Position;
+  lastMove: MyPosition;
   currentPlayer: Player;
   winner?: Player;
   blackPlayer: Player;
   whitePlayer: Player;
 }
 
-export function initBoard(blackPlayer: Player, whitePlayer: Player): BoardState {
+function initBoard(blackPlayer: Player, whitePlayer: Player): BoardState {
   const cells = Array.from(new Array(ROWS).keys()).map((_, row) => {
     return Array.from(new Array(COLS).keys()).map((_, col) => {
       return {
@@ -83,7 +83,7 @@ export function initBoard(blackPlayer: Player, whitePlayer: Player): BoardState 
   return getNextTurn(board);
 }
 
-export function cloneBoard(board: BoardState): BoardState {
+function cloneBoard(board: BoardState): BoardState {
   return {
     ...board,
     cells: cloneCells(board.cells),
@@ -100,7 +100,7 @@ function cloneCells(cells: CellState[][]): CellState[][] {
   });
 }
 
-export function placeStoneAndGetNextTurn(board: BoardState, { row, col }: Position): BoardState | null {
+function placeStoneAndGetNextTurn(board: BoardState, { row, col }: MyPosition): BoardState | null {
   const newBoard = cloneBoard(board);
 
   const cell = newBoard.cells[row][col];
@@ -120,11 +120,11 @@ export function placeStoneAndGetNextTurn(board: BoardState, { row, col }: Positi
   return getNextTurn(newBoard);
 }
 
-export function getReversedColor(color: Colors) {
+function getReversedColor(color: Colors) {
   return color === Colors.Black ? Colors.White : Colors.Black;
 }
 
-export function getNextTurn(board: BoardState): BoardState {
+function getNextTurn(board: BoardState): BoardState {
   board.turnCount++;
   board.turn = getReversedColor(board.turn);
 
@@ -174,8 +174,8 @@ function searchTurnableCells(
   dy: number,
   cell: CellState,
   turn: Colors,
-  arr: Position[]
-): Position[] {
+  arr: MyPosition[]
+): MyPosition[] {
   if (dx === 0 && dy === 0) return [];
   const r = cell.row + dy;
   const c = cell.col + dx;
@@ -192,7 +192,7 @@ function searchTurnableCells(
   return [];
 }
 
-export function calcWeightTotal(board: BoardState, weightTable: number[][], color: Colors) {
+function calcWeightTotal(board: BoardState, weightTable: number[][], color: Colors) {
   let total = 0;
   const opponent_color = getReversedColor(color);
   let player_count = 0;

@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["dom", "esnext", "webworker"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "listEmittedFiles": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "none",
+    "alwaysStrict": false,
+    "strictFunctionTypes": false,
+    "strictPropertyInitialization": false,
+    "downlevelIteration": true,
+    "removeComments": true,
+    "outDir": "public"
+    // "outFile": "public/cpu1.worker.js"
+  },
+  "include": ["src/reversi.worker.ts"],
+  "files": ["src/players/cpu1.worker.ts"]
+}
