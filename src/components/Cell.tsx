@@ -46,8 +46,9 @@ function handleClick(index: number) {
     row: Math.floor(index / COLS),
     col: index % COLS,
   };
-  if (!store.getState().board.currentPlayer.isHuman) {
+  const board = store.getState().board;
+  if (!board.currentPlayer.isHuman) {
     return;
   }
-  store.setStone(payload);
+  store.setStone(board, payload);
 }

@@ -1,3 +1,5 @@
+import Board from './components/Board';
+
 export enum Colors {
   None = 0,
   Black = 1,
@@ -19,6 +21,7 @@ export interface CellState {
   color: Colors; // 0=None, 1=Black, 2=White
   placeable: boolean;
   turnableCells: Position[];
+  value: number;
 }
 
 export interface Player {
@@ -52,6 +55,7 @@ export function initBoard(blackPlayer: Player, whitePlayer: Player): BoardState 
         color: Colors.None,
         placeable: false,
         turnableCells: [],
+        value: 0,
       } as CellState;
     });
   });
@@ -90,17 +94,41 @@ export function cloneBoard(board: BoardState): BoardState {
 }
 
 function cloneCells(cells: CellState[][]): CellState[][] {
-  return cells.map((row, rowIndex) => {
-    return row.map((cell, colIndex) => ({
+  return cells.map((row) => {
+    return row.map((cell) => ({
       ...cell,
       turnableCells: cell.turnableCells.map((p) => ({ ...p })),
     }));
   });
 }
 
+export function placeStoneAndGetNextTurn(board: BoardState, { row, col }: Position): BoardState | null {
+  const newBoard = cloneBoard(board);
+
+  const cell = newBoard.cells[row][col];
+  if (!cell.placeable) {
+    return null;
+  }
+
+  // Place a stone.
+  cell.color = newBoard.turn;
+  newBoard.lastMove = { row, col };
+
+  // Turn all the stones that are in the middle.
+  cell.turnableCells.forEach(({ row, col }) => {
+    newBoard.cells[row][col].color = cell.color;
+  });
+
+  return getNextTurn(newBoard);
+}
+
+export function getReversedColor(color: Colors) {
+  return color === Colors.Black ? Colors.White : Colors.Black;
+}
+
 export function getNextTurn(board: BoardState): BoardState {
   board.turnCount++;
-  board.turn = board.turn === Colors.Black ? Colors.White : Colors.Black;
+  board.turn = getReversedColor(board.turn);
 
   let countWhite = 0,
     countBlack = 0,
@@ -154,7 +182,7 @@ function searchTurnableCells(
   const r = cell.row + dy;
   const c = cell.col + dx;
   if (r < 0 || c < 0 || r > ROWS - 1 || c > COLS - 1) return [];
-  const opponentColor = turn === Colors.Black ? Colors.White : Colors.Black;
+  const opponentColor = getReversedColor(turn);
   const nextCell = board.cells[r][c];
 
   if (nextCell.color === opponentColor) {
@@ -164,4 +192,32 @@ function searchTurnableCells(
     return arr;
   }
   return [];
+}
+
+export function calcWeightTotal(board: BoardState, weightTable: number[][], color: Colors) {
+  let total = 0;
+  const opponent_color = getReversedColor(color);
+  let player_count = 0;
+  let opponent_count = 0;
+
+  for (let i = 0; i < ROWS; i++) {
+    for (let j = 0; j < COLS; j++) {
+      const st = board.cells[i][j].color;
+      if (st == color) {
+        player_count++;
+        total += weightTable[i][j];
+      } else if (st == opponent_color) {
+        opponent_count++;
+        total -= weightTable[i][j];
+      }
+    }
+  }
+
+  //自分の全滅は最低の評価値にする。
+  if (player_count == 0) total = -999999;
+
+  //相手の全滅は最高の評価値にする。
+  if (opponent_count == 0) total = 999999;
+
+  return total;
 }

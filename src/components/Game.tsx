@@ -30,8 +30,7 @@ export default class Game extends React.Component<{}, State> {
       }, 100);
     } else if (!board.currentPlayer.isHuman && board.currentPlayer.think) {
       const result = await board.currentPlayer.think(board);
-      console.log(result);
-      store.setStone(result);
+      store.setStone(board, result);
     }
   };
   componentDidMount() {

@@ -1,5 +1,5 @@
 import EventEmitter from 'eventemitter3';
-import { Position, BoardState, initBoard, cloneBoard, getNextTurn, Player } from './reversi';
+import { Position, BoardState, initBoard, cloneBoard, getNextTurn, Player, placeStoneAndGetNextTurn } from './reversi';
 import humanPlayer from './players/humanPlayer';
 import computerPlayer1 from './players/computerPlayer1';
 import computerPlayer2 from './players/computerPlayer2';
@@ -42,24 +42,13 @@ class Store extends EventEmitter {
     this.emit(EV_PAGE_CHANGED);
   }
 
-  public setStone({ row, col }: Position): void {
-    const newBoard = cloneBoard(this.state.board);
-
-    const cell = newBoard.cells[row][col];
-    if (!cell.placeable) {
+  public setStone(board: BoardState, { row, col }: Position): void {
+    const newBoard = placeStoneAndGetNextTurn(board, { row, col });
+    if (!newBoard) {
       return;
     }
 
-    // Place a stone.
-    cell.color = newBoard.turn;
-    newBoard.lastMove = { row, col };
-
-    // Turn all the stones that are in the middle.
-    cell.turnableCells.forEach(({ row, col }) => {
-      newBoard.cells[row][col].color = cell.color;
-    });
-
-    this.state = { ...this.getState(), board: getNextTurn(newBoard) };
+    this.state = { ...this.getState(), board: newBoard };
     this.emit(EV_BOARD_CHANGED);
   }
 
