@@ -101,3 +101,6 @@ button.primary:hover {
 .Cell-placeable {
   opacity: 0.2;
 }
+.Cell-stable {
+  opacity: 0.5;
+}

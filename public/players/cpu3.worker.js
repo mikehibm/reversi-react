@@ -21,19 +21,19 @@ self.addEventListener('message', function (e) {
             console.log("Evaluating: " + cell.col + "," + cell.row + "...");
             var nextBoard = placeStoneAndGetNextTurn(board, { row: cell.row, col: cell.col });
             if (nextBoard) {
-                cell.value = calcWeightTotal(nextBoard, weightTable, color);
+                cell.value = evaluateByWeight(nextBoard, weightTable, color);
                 console.log("Value (" + cell.col + "," + cell.row + ") = " + cell.value);
                 placeableCells.push(cell);
             }
         });
     });
     if (!placeableCells.length) {
-        postMessage({ row: -1, col: -1 }, undefined);
+        postMessage({ row: -1, col: -1 });
         return;
     }
     placeableCells.sort(function (a, b) { return b.value - a.value; });
     var topN = Math.random() * 100 <= 30 ? 2 : 1;
     var index = Math.floor(Math.random() * Math.min(topN, placeableCells.length));
     var cell = placeableCells[index];
-    postMessage({ row: cell.row, col: cell.col }, undefined);
+    postMessage({ row: cell.row, col: cell.col });
 }, false);

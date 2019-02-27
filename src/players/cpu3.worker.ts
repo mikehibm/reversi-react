@@ -31,7 +31,7 @@ self.addEventListener(
         //console.log('nextBoard: ', nextBoard);
         if (nextBoard) {
           // 盤面の評価値を得る
-          cell.value = calcWeightTotal(nextBoard, weightTable, color);
+          cell.value = evaluateByWeight(nextBoard, weightTable, color);
           console.log(`Value (${cell.col},${cell.row}) = ${cell.value}`);
           placeableCells.push(cell);
         }
@@ -39,7 +39,7 @@ self.addEventListener(
     });
 
     if (!placeableCells.length) {
-      postMessage({ row: -1, col: -1 }, undefined);
+      postMessage({ row: -1, col: -1 });
       return;
     }
 
@@ -50,7 +50,7 @@ self.addEventListener(
     const topN = Math.random() * 100 <= 30 ? 2 : 1;
     const index = Math.floor(Math.random() * Math.min(topN, placeableCells.length));
     const cell = placeableCells[index];
-    postMessage({ row: cell.row, col: cell.col }, undefined);
+    postMessage({ row: cell.row, col: cell.col });
   },
   false
 );

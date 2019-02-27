@@ -10,6 +10,7 @@ export default function Menu() {
 
   const handleStart = (cpu: Player) => {
     store.startGame(human, cpu);
+    // store.startGame(human, humanPlayer('Opponent'));
   };
 
   return (

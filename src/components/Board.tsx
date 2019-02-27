@@ -77,10 +77,12 @@ export default class Board extends React.Component<Props, State> {
       const row = Math.floor(i / COLS);
       const x = x0 + cw * col;
       const y = y0 + ch * row;
-      const color = board.cells[row][col].color;
-      const placeable = board.cells[row][col].placeable;
+      const cell = board.cells[row][col];
+      const color = cell.color;
+      const placeable = cell.placeable;
+      const is_stable = cell.is_stable;
       return (
-        <Cell key={`cell-${i}`} x0={x} y0={y} width={cw} height={ch} index={i} color={color} placeable={placeable} />
+        <Cell key={`cell-${i}`} x0={x} y0={y} width={cw} height={ch} index={i} color={color} placeable={placeable} is_stable={is_stable} />
       );
     });
 

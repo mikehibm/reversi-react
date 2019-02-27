@@ -13,27 +13,22 @@ self.addEventListener('message', function (e) {
     console.log('CPU1 Worker called: ', e.data);
     var board = e.data.board;
     var color = board.turn;
-    var placeableCells = [];
-    board.cells.forEach(function (row) {
-        row.forEach(function (cell) {
-            if (!cell.placeable)
-                return;
-            console.log("Evaluating: " + cell.col + "," + cell.row + "...");
-            var nextBoard = placeStoneAndGetNextTurn(board, { row: cell.row, col: cell.col });
-            if (nextBoard) {
-                cell.value = calcWeightTotal(nextBoard, weightTable, color);
-                console.log("Value (" + cell.col + "," + cell.row + ") = " + cell.value);
-                placeableCells.push(cell);
-            }
-        });
-    });
+    var placeableCells = getPlaceableCells(board);
     if (!placeableCells.length) {
-        postMessage({ row: -1, col: -1 }, undefined);
+        postMessage({ row: -1, col: -1 });
         return;
     }
+    placeableCells.forEach(function (cell) {
+        console.log("Evaluating: " + cell.col + "," + cell.row + "...");
+        var nextBoard = placeStoneAndGetNextTurn(board, { row: cell.row, col: cell.col });
+        if (nextBoard) {
+            cell.value = evaluateByWeight(nextBoard, weightTable, color);
+            console.log("Value (" + cell.col + "," + cell.row + ") = " + cell.value);
+        }
+    });
     placeableCells.sort(function (a, b) { return b.value - a.value; });
     var topN = Math.random() * 100 <= 30 ? 2 : 1;
     var index = Math.floor(Math.random() * Math.min(topN, placeableCells.length));
     var cell = placeableCells[index];
-    postMessage({ row: cell.row, col: cell.col }, undefined);
+    postMessage({ row: cell.row, col: cell.col });
 }, false);
