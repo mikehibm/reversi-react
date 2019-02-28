@@ -129,7 +129,6 @@ function checkIfPlaceable(board, cell, turn) {
 function checkIfStable(board, cell) {
     if (!cell || isOutOfRange(cell.row, cell.col) || cell.color === Colors.None)
         return false;
-    console.log("Checking if stable (" + cell.col + "," + cell.row + ")");
     if (isCorner(cell.row, cell.col)) {
         cell.is_stable = true;
     }
@@ -137,24 +136,23 @@ function checkIfStable(board, cell) {
         var cur_color = cell.color;
         var stable_count = 0;
         var cnt = 0;
-        for (var dy = -1; dy <= 1; dy++) {
-            for (var dx = -1; dx <= 1; dx++) {
+        for (var dy = -1; dy <= 0 && cnt < 4; dy++) {
+            for (var dx = -1; dx <= 1 && cnt < 4; dx++) {
                 if (dx === 0 && dy === 0)
                     continue;
                 var px = cell.col + dx;
                 var py = cell.row + dy;
                 var isOut = isOutOfRange(py, px);
                 var c = isOut ? null : board.cells[py][px];
-                if (isOut || (c && c.color === cur_color && c.is_stable)) {
-                    var cx = cell.col + dx * -1;
-                    var cy = cell.row + dy * -1;
-                    var crossIsOut = isOutOfRange(cy, cx);
-                    var cross = crossIsOut ? null : board.cells[cy][cx];
-                    if (isOut || ((cross && cross.color !== cur_color) || (cross && !cross.is_stable))) {
-                        stable_count++;
-                        if (stable_count >= 4)
-                            dy = dx = 2;
-                    }
+                var cx = cell.col + dx * -1;
+                var cy = cell.row + dy * -1;
+                var crossIsOut = isOutOfRange(cy, cx);
+                var cross = crossIsOut ? null : board.cells[cy][cx];
+                if (isOut ||
+                    (c && c.color === cur_color && c.is_stable) ||
+                    crossIsOut ||
+                    (cross && cross.color === cur_color && cross.is_stable)) {
+                    stable_count++;
                 }
                 cnt++;
             }
@@ -162,7 +160,6 @@ function checkIfStable(board, cell) {
         cell.is_stable = stable_count >= 4;
     }
     if (cell.is_stable) {
-        console.log("(" + cell.col + "," + cell.row + ") is stable.");
         for (var dy = -1; dy <= 1; dy++) {
             for (var dx = -1; dx <= 1; dx++) {
                 if (dx === 0 && dy === 0)
@@ -186,6 +183,9 @@ function filterStableCells(board) {
     });
     return stableCells;
 }
+function positionToStr(row, col) {
+    return "(" + String.fromCharCode('a'.charCodeAt(0) + col) + "," + (row + 1) + ")";
+}
 function debugStables(board) {
     var list = filterStableCells(board);
     if (list.length === 0)
@@ -193,7 +193,7 @@ function debugStables(board) {
     console.log("Stable cells: ");
     var msg = '';
     list.forEach(function (c) {
-        msg += "(" + c.col + "," + c.row + "), ";
+        msg += positionToStr(c.row, c.col) + ", ";
     });
     console.log(msg);
 }
@@ -223,12 +223,9 @@ function getPlaceableCells(board) {
     return placeableCells;
 }
 function getWeight(cell, tbl, row, col, color) {
-    if (cell.color === color) {
-        return cell.is_stable ? STABLE_SCORE : tbl[row][col];
-    }
-    else {
-        return cell.is_stable ? STABLE_SCORE * -1 : tbl[row][col];
-    }
+    if (cell.color === Colors.None)
+        return 0;
+    return (cell.is_stable ? STABLE_SCORE : tbl[row][col]) * (cell.color === color ? 1 : -1);
 }
 function evaluateByWeight(board, weightTable, color) {
     var total = 0;
@@ -239,14 +236,9 @@ function evaluateByWeight(board, weightTable, color) {
         for (var j = 0; j < COLS; j++) {
             var cell = board.cells[i][j];
             var st = cell.color;
-            if (st === color) {
-                player_count++;
-                total += getWeight(cell, weightTable, i, j, color);
-            }
-            else if (st == opponent_color) {
-                opponent_count++;
-                total -= getWeight(cell, weightTable, i, j, opponent_color);
-            }
+            player_count += st === color ? 1 : 0;
+            opponent_count += st === opponent_color ? 1 : 0;
+            total += getWeight(cell, weightTable, i, j, color);
         }
     }
     if (player_count == 0)
@@ -270,11 +262,13 @@ function evaluateByMinMax(cell, board, weightTable, depth) {
         return evaluateByMinMax({ row: -1, col: -1 }, nextBoard, weightTable, depth - 1) * -1;
     }
     placeableCells.forEach(function (cell) {
-        cell.value = evaluateByMinMax(cell, nextBoard, weightTable, depth - 1) * -1;
-        console.log("Depth: " + depth + " (" + cell.col + "," + cell.row + ") v = " + cell.value);
+        cell.value = evaluateByMinMax(cell, nextBoard, weightTable, depth - 1);
+        console.log("Depth: " + depth + " " + positionToStr(cell.row, cell.col) + " v = " + cell.value);
     });
     placeableCells.sort(function (a, b) { return b.value - a.value; });
-    var topCell = placeableCells[0];
-    console.log("Depth: " + depth + " Top cell is (" + topCell.col + "," + topCell.row + ") v = " + topCell.value);
-    return topCell.value;
+    var topValue = placeableCells[0].value;
+    var topCells = placeableCells.filter(function (c) { return c.value === topValue; });
+    var topCell = topCells[Math.floor(Math.random() * topCells.length)];
+    console.log("Depth: " + depth + " Top cell is " + positionToStr(topCell.row, topCell.col) + " v = " + topCell.value);
+    return topCell.value * -1;
 }

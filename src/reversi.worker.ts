@@ -202,7 +202,7 @@ function checkIfPlaceable(board: BoardState, cell: CellState, turn: Colors): boo
 
 function checkIfStable(board: BoardState, cell: CellState): boolean {
   if (!cell || isOutOfRange(cell.row, cell.col) || cell.color === Colors.None) return false;
-  console.log(`Checking if stable (${cell.col},${cell.row})`);
+  // console.log(`Checking if stable ${positionToStr(cell.row, cell.col)}`);
 
   if (isCorner(cell.row, cell.col)) {
     cell.is_stable = true;
@@ -211,35 +211,38 @@ function checkIfStable(board: BoardState, cell: CellState): boolean {
     let stable_count = 0;
     let cnt = 0;
 
-    for (let dy = -1; dy <= 1; dy++) {
-      for (let dx = -1; dx <= 1; dx++) {
+    for (let dy = -1; dy <= 0 && cnt < 4; dy++) {
+      for (let dx = -1; dx <= 1 && cnt < 4; dx++) {
         if (dx === 0 && dy === 0) continue;
         const px = cell.col + dx;
         const py = cell.row + dy;
         const isOut = isOutOfRange(py, px);
-        // console.log(`(px,py)=(${px},${py}), isOut=${isOut}`);
+        // console.log(`(px,py)=${positionToStr(py, px)}, isOut=${isOut}`);
         const c: CellState | null = isOut ? null : board.cells[py][px];
-        if (isOut || (c && c.color === cur_color && c.is_stable)) {
-          const cx = cell.col + dx * -1;
-          const cy = cell.row + dy * -1;
-          const crossIsOut = isOutOfRange(cy, cx);
-          // console.log(`(cx,cy)=(${cx},${cy}), crossIsOut=${crossIsOut}`);
-          const cross: CellState | null = crossIsOut ? null : board.cells[cy][cx];
-          if (isOut || ((cross && cross.color !== cur_color) || (cross && !cross.is_stable))) {
-            stable_count++;
-            if (stable_count >= 4) dy = dx = 2;
-          }
+
+        const cx = cell.col + dx * -1;
+        const cy = cell.row + dy * -1;
+        const crossIsOut = isOutOfRange(cy, cx);
+        // console.log(`(cx,cy)=${positionToStr(cy, cx)}, crossIsOut=${crossIsOut}`);
+        const cross: CellState | null = crossIsOut ? null : board.cells[cy][cx];
+
+        if (
+          isOut ||
+          (c && c.color === cur_color && c.is_stable) ||
+          crossIsOut ||
+          (cross && cross.color === cur_color && cross.is_stable)
+        ) {
+          stable_count++;
         }
-        //if (8 - cnt + stable_count < 4) dy = dx = 2;
         cnt++;
       }
     }
-    // console.log(`(${cell.col},${cell.row}) stable_count = ${stable_count}`);
+    // console.log(`${positionToStr(cell.row, cell.col)} stable_count = ${stable_count}`);
     cell.is_stable = stable_count >= 4;
   }
 
   if (cell.is_stable) {
-    console.log(`(${cell.col},${cell.row}) is stable.`);
+    // console.log(`${positionToStr(cell.row, cell.col)} is stable.`);
     for (let dy = -1; dy <= 1; dy++) {
       for (let dx = -1; dx <= 1; dx++) {
         if (dx === 0 && dy === 0) continue;
@@ -264,13 +267,17 @@ function filterStableCells(board: BoardState) {
   return stableCells;
 }
 
+function positionToStr(row: number, col: number) {
+  return `(${String.fromCharCode('a'.charCodeAt(0) + col)},${row + 1})`;
+}
+
 function debugStables(board: BoardState) {
   const list = filterStableCells(board);
   if (list.length === 0) return;
   console.log(`Stable cells: `);
   let msg = '';
   list.forEach((c) => {
-    msg += `(${c.col},${c.row}), `;
+    msg += `${positionToStr(c.row, c.col)}, `;
   });
   console.log(msg);
 }
@@ -308,11 +315,8 @@ function getPlaceableCells(board: BoardState) {
 }
 
 function getWeight(cell: CellState, tbl: number[][], row: number, col: number, color: Colors): number {
-  if (cell.color === color) {
-    return cell.is_stable ? STABLE_SCORE : tbl[row][col];
-  } else {
-    return cell.is_stable ? STABLE_SCORE * -1 : tbl[row][col];
-  }
+  if (cell.color === Colors.None) return 0;
+  return (cell.is_stable ? STABLE_SCORE : tbl[row][col]) * (cell.color === color ? 1 : -1);
 }
 
 function evaluateByWeight(board: BoardState, weightTable: number[][], color: Colors) {
@@ -325,13 +329,9 @@ function evaluateByWeight(board: BoardState, weightTable: number[][], color: Col
     for (let j = 0; j < COLS; j++) {
       const cell = board.cells[i][j];
       const st = cell.color;
-      if (st === color) {
-        player_count++;
-        total += getWeight(cell, weightTable, i, j, color);
-      } else if (st == opponent_color) {
-        opponent_count++;
-        total -= getWeight(cell, weightTable, i, j, opponent_color);
-      }
+      player_count += st === color ? 1 : 0;
+      opponent_count += st === opponent_color ? 1 : 0;
+      total += getWeight(cell, weightTable, i, j, color);
     }
   }
 
@@ -350,7 +350,7 @@ enum CalcType {
 }
 
 function evaluateByMinMax(cell: CellState, board: BoardState, weightTable: number[][], depth: number): number {
-  //console.log(`Depth=${depth}: (${cell.col},${cell.row})...`);
+  //console.log(`Depth=${depth}: ${positionToStr(cell.row, cell.col)}...`);
   // この場所に打った後の盤面を得る
   const nextBoard = placeStoneAndGetNextTurn(board, { row: cell.row, col: cell.col }) as BoardState;
 
@@ -365,14 +365,18 @@ function evaluateByMinMax(cell: CellState, board: BoardState, weightTable: numbe
   }
 
   placeableCells.forEach((cell) => {
-    cell.value = evaluateByMinMax(cell, nextBoard, weightTable, depth - 1) * -1;
-    console.log(`Depth: ${depth} (${cell.col},${cell.row}) v = ${cell.value}`);
+    cell.value = evaluateByMinMax(cell, nextBoard, weightTable, depth - 1);
+    console.log(`Depth: ${depth} ${positionToStr(cell.row, cell.col)} v = ${cell.value}`);
   });
 
   // 評価値の降順にソート
   placeableCells.sort((a, b) => b.value - a.value);
 
-  const topCell = placeableCells[0];
-  console.log(`Depth: ${depth} Top cell is (${topCell.col},${topCell.row}) v = ${topCell.value}`);
-  return topCell.value;
+  // 最高の評価値のセルが複数あればそれらの中からランダムに選ぶ。
+  const topValue = placeableCells[0].value;
+  const topCells = placeableCells.filter((c) => c.value === topValue);
+  const topCell = topCells[Math.floor(Math.random() * topCells.length)];
+
+  console.log(`Depth: ${depth} Top cell is ${positionToStr(topCell.row, topCell.col)} v = ${topCell.value}`);
+  return topCell.value * -1;
 }

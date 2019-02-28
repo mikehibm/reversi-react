@@ -11,23 +11,26 @@ interface Props {
   color: Colors;
   placeable: boolean;
   is_stable: boolean;
+  is_human: boolean;
 }
 
-export default function Cell({ x0, y0, width, height, index, color, placeable, is_stable }: Props) {
+export default function Cell({ x0, y0, width, height, index, color, placeable, is_stable, is_human }: Props) {
   const colorNames = ['none', 'black', 'white'];
   const colorName = colorNames[color];
   const cx = x0 + width / 2;
   const cy = y0 + height / 2;
   const r = width * 0.44;
+  const cellClass = placeable && is_human ? 'Cell-placeable' : 'Cell';
+  const rectClass = placeable && is_human ? 'Cell-rect-placeable' : 'Cell-rect';
 
   return (
-    <g className="Cell" onClick={() => handleClick(index)}>
+    <g className={cellClass} onClick={placeable ? () => handleClick(index) : undefined}>
       <circle className="Cell-circle" cx={cx} cy={cy} r={r} stroke="none" fill={colorName} />
       {placeable && (
-        <circle className="Cell-placeable" cx={cx} cy={cy} r={width * 0.06} stroke="none" fill={'yellow'} />
+        <circle className="Cell-marker-placeable" cx={cx} cy={cy} r={width * 0.06} stroke="none" fill={'yellow'} />
       )}
       {is_stable && <circle className="Cell-stable" cx={cx} cy={cy} r={width * 0.12} stroke="none" fill={'gray'} />}
-      <rect className="Cell-rect" x={x0} y={y0} width={width} height={height} stroke="none" fill="white" />
+      <rect className={rectClass} x={x0} y={y0} width={width} height={height} stroke="none" fill="white" />
     </g>
   );
 }

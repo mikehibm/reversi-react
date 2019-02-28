@@ -18,6 +18,7 @@ export default function(name: string): Player {
           blackCount: board.blackCount,
           whiteCount: board.whiteCount,
           placeableCount: board.placeableCount,
+          stableCount: board.stableCount,
           finished: board.finished,
           lastMove: board.lastMove,
         },

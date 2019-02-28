@@ -12,19 +12,25 @@ self.addEventListener('message', function (e) {
     ];
     console.log('CPU2 Worker called: ', e.data);
     var board = e.data.board;
-    var color = board.turn;
     var placeableCells = getPlaceableCells(board);
     if (!placeableCells.length) {
         postMessage({ row: -1, col: -1 });
         return;
     }
-    var depth = 1;
+    var depth = 2;
     placeableCells.forEach(function (cell) {
-        console.log("Evaluating: " + cell.col + "," + cell.row + " for depth of " + depth + "...");
+        console.log("Evaluating: " + positionToStr(cell.row, cell.col) + " for depth of " + depth + "...");
         cell.value = evaluateByMinMax(cell, board, weightTable, depth);
-        console.log("Value (" + cell.col + "," + cell.row + ") = " + cell.value);
+        console.log("Value " + positionToStr(cell.row, cell.col) + " = " + cell.value);
     });
     placeableCells.sort(function (a, b) { return b.value - a.value; });
+    var topValue = placeableCells[0].value;
+    var topCells = placeableCells.filter(function (c) { return c.value === topValue; });
+    if (topCells.length > 1) {
+        var cell_1 = topCells[Math.floor(Math.random() * topCells.length)];
+        postMessage({ row: cell_1.row, col: cell_1.col });
+        return;
+    }
     var cell = placeableCells[0];
     postMessage({ row: cell.row, col: cell.col });
 }, false);

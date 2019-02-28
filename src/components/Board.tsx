@@ -27,6 +27,7 @@ export default class Board extends React.Component<Props, State> {
 
   render() {
     const { board } = this.state;
+    const is_human = board.currentPlayer.isHuman;
     const { width, height } = this.props;
     const padding = 30;
     const rw = width - padding * 2;
@@ -82,7 +83,18 @@ export default class Board extends React.Component<Props, State> {
       const placeable = cell.placeable;
       const is_stable = cell.is_stable;
       return (
-        <Cell key={`cell-${i}`} x0={x} y0={y} width={cw} height={ch} index={i} color={color} placeable={placeable} is_stable={is_stable} />
+        <Cell
+          key={`cell-${i}`}
+          x0={x}
+          y0={y}
+          width={cw}
+          height={ch}
+          index={i}
+          color={color}
+          placeable={placeable}
+          is_stable={is_stable}
+          is_human={is_human}
+        />
       );
     });
 

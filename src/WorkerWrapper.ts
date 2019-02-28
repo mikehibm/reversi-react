@@ -6,7 +6,6 @@ export class WorkerWrapper {
   async execute(data: any): Promise<any> {
     return await new Promise<any>((resolve) => {
       const func = async (result: any) => {
-        console.log('result.data=', result.data);
         this._worker.removeEventListener('message', func);
         resolve(result.data);
       };

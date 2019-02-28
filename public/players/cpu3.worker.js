@@ -12,28 +12,25 @@ self.addEventListener('message', function (e) {
     ];
     console.log('CPU3 Worker called: ', e.data);
     var board = e.data.board;
-    var color = board.turn;
-    var placeableCells = [];
-    board.cells.forEach(function (row) {
-        row.forEach(function (cell) {
-            if (!cell.placeable)
-                return;
-            console.log("Evaluating: " + cell.col + "," + cell.row + "...");
-            var nextBoard = placeStoneAndGetNextTurn(board, { row: cell.row, col: cell.col });
-            if (nextBoard) {
-                cell.value = evaluateByWeight(nextBoard, weightTable, color);
-                console.log("Value (" + cell.col + "," + cell.row + ") = " + cell.value);
-                placeableCells.push(cell);
-            }
-        });
-    });
+    var placeableCells = getPlaceableCells(board);
     if (!placeableCells.length) {
         postMessage({ row: -1, col: -1 });
         return;
     }
+    var depth = 3;
+    placeableCells.forEach(function (cell) {
+        console.log("Evaluating: " + positionToStr(cell.row, cell.col) + " for depth of " + depth + "...");
+        cell.value = evaluateByMinMax(cell, board, weightTable, depth);
+        console.log("Value " + positionToStr(cell.row, cell.col) + " = " + cell.value);
+    });
     placeableCells.sort(function (a, b) { return b.value - a.value; });
-    var topN = Math.random() * 100 <= 30 ? 2 : 1;
-    var index = Math.floor(Math.random() * Math.min(topN, placeableCells.length));
-    var cell = placeableCells[index];
+    var topValue = placeableCells[0].value;
+    var topCells = placeableCells.filter(function (c) { return c.value === topValue; });
+    if (topCells.length > 1) {
+        var cell_1 = topCells[Math.floor(Math.random() * topCells.length)];
+        postMessage({ row: cell_1.row, col: cell_1.col });
+        return;
+    }
+    var cell = placeableCells[0];
     postMessage({ row: cell.row, col: cell.col });
 }, false);

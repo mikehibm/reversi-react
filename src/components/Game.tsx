@@ -1,6 +1,6 @@
 import * as React from 'react';
 import store, { EV_BOARD_CHANGED } from '../store';
-import { BoardState } from '../reversi';
+import { BoardState, positionToStr } from '../reversi';
 import Board from './Board';
 import Stats from './Stats';
 
@@ -30,6 +30,7 @@ export default class Game extends React.Component<{}, State> {
       }, 100);
     } else if (!board.currentPlayer.isHuman && board.currentPlayer.think) {
       const result = await board.currentPlayer.think(board);
+      console.log(`Think result=${positionToStr(result.row, result.col)}`);
       store.setStone(board, result);
     }
   };

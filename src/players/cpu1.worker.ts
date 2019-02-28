@@ -19,7 +19,6 @@ self.addEventListener(
 
     console.log('CPU1 Worker called: ', e.data);
     const board: BoardState = e.data.board;
-    const color = board.turn;
 
     const placeableCells: CellState[] = getPlaceableCells(board);
     if (!placeableCells.length) {
@@ -27,23 +26,28 @@ self.addEventListener(
       return;
     }
 
+    const depth = 1;
     placeableCells.forEach((cell) => {
-      console.log(`Evaluating: ${cell.col},${cell.row}...`);
-      // この場所に打った後の盤面を得る
-      const nextBoard = placeStoneAndGetNextTurn(board, { row: cell.row, col: cell.col }) as BoardState;
-      //console.log('nextBoard: ', nextBoard);
-      if (nextBoard) {
-        // 盤面の評価値を得る
-        cell.value = evaluateByWeight(nextBoard, weightTable, color);
-        console.log(`Value (${cell.col},${cell.row}) = ${cell.value}`);
-      }
+      console.log(`Evaluating: ${positionToStr(cell.row, cell.col)} for depth of ${depth}...`);
+      // それぞれの候補の評価値を得る
+      cell.value = evaluateByMinMax(cell, board, weightTable, depth);
+      console.log(`Value ${positionToStr(cell.row, cell.col)} = ${cell.value}`);
     });
 
     // 評価値の降順にソート
     placeableCells.sort((a, b) => b.value - a.value);
 
-    // 70%の確率で先頭の候補、30%の確率で先頭から2つのうちどちらかを選ぶ。
-    const topN = Math.random() * 100 <= 30 ? 2 : 1;
+    // 最高の評価値のセルが複数あればそれらの中からランダムに選ぶ。
+    const topValue = placeableCells[0].value;
+    const topCells = placeableCells.filter((c) => c.value === topValue);
+    if (topCells.length > 1) {
+      const cell = topCells[Math.floor(Math.random() * topCells.length)];
+      postMessage({ row: cell.row, col: cell.col });
+      return;
+    }
+
+    // // 80%の確率で先頭の候補、20%の確率で先頭から2つのうちどちらかを選ぶ。
+    const topN = Math.random() * 100 <= 20 ? 2 : 1;
     const index = Math.floor(Math.random() * Math.min(topN, placeableCells.length));
     const cell = placeableCells[index];
     postMessage({ row: cell.row, col: cell.col });

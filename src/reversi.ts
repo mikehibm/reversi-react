@@ -113,21 +113,21 @@ function cloneCells(cells: CellState[][]): CellState[][] {
 export function placeStoneAndGetNextTurn(board: BoardState, { row, col }: Position): BoardState | null {
   const newBoard = cloneBoard(board);
 
-  if (!isOutOfRange(row, col)) {
-    const cell = newBoard.cells[row][col];
-    if (cell.placeable) {
-      // Place a stone.
-      cell.color = newBoard.turn;
+  if (isOutOfRange(row, col)) return newBoard;
 
-      // Turn all the stones that are in the middle.
-      const turnableCells = cell.turnableCells.map((p) => newBoard.cells[p.row][p.col]);
-      turnableCells.forEach((c) => (c.color = cell.color));
+  const cell = newBoard.cells[row][col];
+  if (!cell.placeable) return newBoard;
 
-      // Check stable stones.
-      [cell, ...turnableCells].forEach((c) => checkIfStable(newBoard, c));
-      debugStables(newBoard);
-    }
-  }
+  // Place a stone.
+  cell.color = newBoard.turn;
+
+  // Turn all the stones that are in the middle.
+  const turnableCells = cell.turnableCells.map((p) => newBoard.cells[p.row][p.col]);
+  turnableCells.forEach((c) => (c.color = cell.color));
+
+  // Check stable stones.
+  [cell, ...turnableCells].forEach((c) => checkIfStable(newBoard, c));
+  debugStables(newBoard);
 
   newBoard.lastMove = { row, col };
   return getNextTurn(newBoard);
@@ -202,7 +202,7 @@ function checkIfPlaceable(board: BoardState, cell: CellState, turn: Colors): boo
 
 function checkIfStable(board: BoardState, cell: CellState): boolean {
   if (!cell || isOutOfRange(cell.row, cell.col) || cell.color === Colors.None) return false;
-  console.log(`Checking if stable (${cell.col},${cell.row})`);
+  console.log(`Checking if stable ${positionToStr(cell.row, cell.col)}`);
 
   if (isCorner(cell.row, cell.col)) {
     cell.is_stable = true;
@@ -211,35 +211,37 @@ function checkIfStable(board: BoardState, cell: CellState): boolean {
     let stable_count = 0;
     let cnt = 0;
 
-    for (let dy = -1; dy <= 1; dy++) {
-      for (let dx = -1; dx <= 1; dx++) {
-        if (dx === 0 && dy === 0) continue;
+    for (let dy = -1; dy <= 0 && cnt < 4; dy++) {
+      for (let dx = -1; dx <= 1 && cnt < 4; dx++) {
         const px = cell.col + dx;
         const py = cell.row + dy;
         const isOut = isOutOfRange(py, px);
-        // console.log(`(px,py)=(${px},${py}), isOut=${isOut}`);
+        // console.log(`(px,py)=${positionToStr(py, px)}, isOut=${isOut}`);
         const c: CellState | null = isOut ? null : board.cells[py][px];
-        if (isOut || (c && c.color === cur_color && c.is_stable)) {
-          const cx = cell.col + dx * -1;
-          const cy = cell.row + dy * -1;
-          const crossIsOut = isOutOfRange(cy, cx);
-          // console.log(`(cx,cy)=(${cx},${cy}), crossIsOut=${crossIsOut}`);
-          const cross: CellState | null = crossIsOut ? null : board.cells[cy][cx];
-          if (isOut || ((cross && cross.color !== cur_color) || (cross && !cross.is_stable))) {
-            stable_count++;
-            if (stable_count >= 4) dy = dx = 2;
-          }
+
+        const cx = cell.col + dx * -1;
+        const cy = cell.row + dy * -1;
+        const crossIsOut = isOutOfRange(cy, cx);
+        // console.log(`(cx,cy)=${positionToStr(cy, cx)}, crossIsOut=${crossIsOut}`);
+        const cross: CellState | null = crossIsOut ? null : board.cells[cy][cx];
+
+        if (
+          isOut ||
+          (c && c.color === cur_color && c.is_stable) ||
+          crossIsOut ||
+          (cross && cross.color === cur_color && cross.is_stable)
+        ) {
+          stable_count++;
         }
-        //if (8 - cnt + stable_count < 4) dy = dx = 2;
         cnt++;
       }
     }
-    // console.log(`(${cell.col},${cell.row}) stable_count = ${stable_count}`);
+    //console.log(`${positionToStr(cell.row, cell.col)} stable_count = ${stable_count}`);
     cell.is_stable = stable_count >= 4;
   }
 
   if (cell.is_stable) {
-    console.log(`(${cell.col},${cell.row}) is stable.`);
+    console.log(`${positionToStr(cell.row, cell.col)} is stable.`);
     for (let dy = -1; dy <= 1; dy++) {
       for (let dx = -1; dx <= 1; dx++) {
         if (dx === 0 && dy === 0) continue;
@@ -264,13 +266,17 @@ export function filterStableCells(board: BoardState): CellState[] {
   return stableCells;
 }
 
+export function positionToStr(row: number, col: number) {
+  return `(${String.fromCharCode('a'.charCodeAt(0) + col)},${row + 1})`;
+}
+
 function debugStables(board: BoardState) {
   const list = filterStableCells(board);
   if (list.length === 0) return;
   console.log(`Stable cells: `);
   let msg = '';
   list.forEach((c) => {
-    msg += `(${c.col},${c.row}), `;
+    msg += `${positionToStr(c.row, c.col)}, `;
   });
   console.log(msg);
 }
@@ -298,31 +304,3 @@ function searchTurnableCells(
   }
   return [];
 }
-
-// export function calcWeightTotal(board: BoardState, weightTable: number[][], color: Colors) {
-//   let total = 0;
-//   const opponent_color = getReversedColor(color);
-//   let player_count = 0;
-//   let opponent_count = 0;
-
-//   for (let i = 0; i < ROWS; i++) {
-//     for (let j = 0; j < COLS; j++) {
-//       const st = board.cells[i][j].color;
-//       if (st == color) {
-//         player_count++;
-//         total += weightTable[i][j];
-//       } else if (st == opponent_color) {
-//         opponent_count++;
-//         total -= weightTable[i][j];
-//       }
-//     }
-//   }
-
-//   //自分の全滅は最低の評価値にする。
-//   if (player_count == 0) total = -999999;
-
-//   //相手の全滅は最高の評価値にする。
-//   if (opponent_count == 0) total = 999999;
-
-//   return total;
-// }
