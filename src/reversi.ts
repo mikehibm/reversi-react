@@ -267,6 +267,7 @@ export function filterStableCells(board: BoardState): CellState[] {
 }
 
 export function positionToStr(row: number, col: number) {
+  if (row < 0 || col < 0) return '(none)';
   return `(${String.fromCharCode('a'.charCodeAt(0) + col)},${row + 1})`;
 }
 

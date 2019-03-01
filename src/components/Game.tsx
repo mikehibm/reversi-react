@@ -11,7 +11,7 @@ interface State {
 export default class Game extends React.Component<{}, State> {
   state = { board: store.getState().board };
 
-  onChangeStore = async () => {
+  onBoardChange = async () => {
     const { board } = store.getState();
     this.setState({ board });
 
@@ -31,14 +31,15 @@ export default class Game extends React.Component<{}, State> {
     } else if (!board.currentPlayer.isHuman && board.currentPlayer.think) {
       const result = await board.currentPlayer.think(board);
       console.log(`Think result=${positionToStr(result.row, result.col)}`);
-      store.setStone(board, result);
+      store.setStone(result);
     }
   };
   componentDidMount() {
-    store.on(EV_BOARD_CHANGED, this.onChangeStore);
+    store.on(EV_BOARD_CHANGED, this.onBoardChange);
+    setTimeout(() => this.onBoardChange(), 100);
   }
   componentWillUnmount() {
-    store.off(EV_BOARD_CHANGED, this.onChangeStore);
+    store.off(EV_BOARD_CHANGED, this.onBoardChange);
   }
 
   handleBack = () => {

@@ -38,11 +38,9 @@ class Store extends EventEmitter {
     this.emit(EV_PAGE_CHANGED);
   }
 
-  public setStone(board: BoardState, { row, col }: Position): void {
-    const newBoard = placeStoneAndGetNextTurn(board, { row, col });
-    if (!newBoard) {
-      return;
-    }
+  public setStone({ row, col }: Position): void {
+    const newBoard = placeStoneAndGetNextTurn(this.state.board, { row, col });
+    if (!newBoard) return;
 
     this.state = { ...this.getState(), board: newBoard };
     this.emit(EV_BOARD_CHANGED);

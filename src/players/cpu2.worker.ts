@@ -47,10 +47,9 @@ self.addEventListener(
     }
 
     // // 80%の確率で先頭の候補、20%の確率で先頭から2つのうちどちらかを選ぶ。
-    // const topN = Math.random() * 100 <= 20 ? 2 : 1;
-    // const index = Math.floor(Math.random() * Math.min(topN, placeableCells.length));
-    // const cell = placeableCells[index];
-    const cell = placeableCells[0];
+    const topN = Math.random() * 100 <= 20 ? 2 : 1;
+    const index = Math.floor(Math.random() * Math.min(topN, placeableCells.length));
+    const cell = placeableCells[index];
     postMessage({ row: cell.row, col: cell.col });
   },
   false

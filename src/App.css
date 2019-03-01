@@ -41,7 +41,9 @@
 }
 
 .menu li button {
-  min-width: 8em;
+  min-width: 7em;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
 }
 
 button {
@@ -64,6 +66,12 @@ button.primary {
   font-weight: bold;
   color: white;
   background-color: cornflowerblue;
+}
+button.primary.black {
+  background-color: darkcyan;
+}
+button.primary.white {
+  background-color: lightcoral;
 }
 button.primary:active {
   background-color: cyan;
@@ -97,6 +105,9 @@ button.primary:hover {
 }
 .Cell-rect-placeable:hover {
   opacity: 0.4;
+}
+.Cell-last {
+  opacity: 0.8;
 }
 .Cell-marker-placeable {
   opacity: 0.2;
