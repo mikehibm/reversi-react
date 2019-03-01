@@ -31,9 +31,23 @@ export default function Menu() {
             </button>
           </li>
         ))}
-        <button className="primary" onClick={() => handleStart(cpus[0], cpus[1])}>
-          Test CPUs
-        </button>
+        <li>TEST</li>
+        <li>
+          <button className="primary" onClick={() => handleStart(cpus[0], cpus[1])}>
+            CPU 1 vs 2
+          </button>
+          <button className="primary" onClick={() => handleStart(cpus[1], cpus[0])}>
+            CPU 2 vs 1
+          </button>
+        </li>
+        <li>
+          <button className="primary" onClick={() => handleStart(cpus[1], cpus[2])}>
+            CPU 2 vs 3
+          </button>
+          <button className="primary" onClick={() => handleStart(cpus[2], cpus[1])}>
+            CPU 3 vs 2
+          </button>
+        </li>
       </ul>
     </div>
   );

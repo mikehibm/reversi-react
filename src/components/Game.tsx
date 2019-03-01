@@ -8,6 +8,14 @@ interface State {
   board: BoardState;
 }
 
+function showAlert(msg: string, board: BoardState) {
+  console.log(msg);
+  if (!board.blackPlayer.isHuman && !board.whitePlayer.isHuman) {
+    return;
+  }
+  alert(msg);
+}
+
 export default class Game extends React.Component<{}, State> {
   state = { board: store.getState().board };
 
@@ -18,14 +26,14 @@ export default class Game extends React.Component<{}, State> {
     if (board.finished) {
       setTimeout(() => {
         if (board.winner) {
-          alert(`Finished! Winner is ${board.winner.name}`);
+          showAlert(`Finished! Winner is ${board.winner.name}`, board);
         } else {
-          alert(`Finished! DRAW GAME!`);
+          showAlert(`Finished! DRAW GAME!`, board);
         }
       }, 100);
     } else if (board.placeableCount === 0) {
       setTimeout(() => {
-        alert(`${board.currentPlayer.name} must pass this turn.`);
+        showAlert(`${board.currentPlayer.name} must pass this turn.`, board);
         store.skipTurn();
       }, 100);
     } else if (!board.currentPlayer.isHuman && board.currentPlayer.think) {
