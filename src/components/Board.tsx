@@ -2,6 +2,7 @@ import * as React from 'react';
 import store, { EV_BOARD_CHANGED } from '../store';
 import { ROWS, COLS, BoardState } from '../reversi';
 import Cell from './Cell';
+import thinking from '../thinking.svg';
 
 interface Props {
   width: number;
@@ -27,6 +28,7 @@ export default class Board extends React.Component<Props, State> {
 
   render() {
     const { board } = this.state;
+    const isHuman = board.currentPlayer.isHuman;
     const { width, height } = this.props;
     const padding = 30;
     const rw = width - padding * 2;
@@ -82,16 +84,19 @@ export default class Board extends React.Component<Props, State> {
     });
 
     return (
-      <svg className="Board" width={width} height={height}>
-        <g>{hletters}</g>
-        <g>{vletters}</g>
-        <g>
-          <rect x={x0} y={y0} width={rw} height={rh} stroke="black" strokeWidth="1" fill="green" />
-          {vlines}
-          {hlines}
-        </g>
-        <g>{cells}</g>
-      </svg>
+      <>
+        {!isHuman && <img src={thinking} className="Game-thinking" alt="thinking" />}
+        <svg className="Board" width={width} height={height}>
+          <g>{hletters}</g>
+          <g>{vletters}</g>
+          <g>
+            <rect x={x0} y={y0} width={rw} height={rh} stroke="black" strokeWidth="1" fill="green" />
+            {vlines}
+            {hlines}
+          </g>
+          <g>{cells}</g>
+        </svg>
+      </>
     );
   }
 }
