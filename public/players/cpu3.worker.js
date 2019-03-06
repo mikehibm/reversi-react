@@ -31,6 +31,8 @@ self.addEventListener('message', function (e) {
         postMessage({ row: cell_1.row, col: cell_1.col });
         return;
     }
-    var cell = placeableCells[0];
+    var topN = Math.random() * 100 <= 20 ? 2 : 1;
+    var index = Math.floor(Math.random() * Math.min(topN, placeableCells.length));
+    var cell = placeableCells[index];
     postMessage({ row: cell.row, col: cell.col });
 }, false);

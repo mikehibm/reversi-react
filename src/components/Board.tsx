@@ -29,7 +29,8 @@ export default class Board extends React.Component<Props, State> {
 
   render() {
     const { board } = this.state;
-    const isHuman = board.currentPlayer.isHuman;
+    const { finished, currentPlayer } = board;
+    const isHuman = currentPlayer.isHuman;
     const { width, height } = this.props;
     const padding = 30;
     const rw = width - padding * 2;
@@ -86,7 +87,7 @@ export default class Board extends React.Component<Props, State> {
 
     return (
       <div className="Board">
-        {!isHuman && <img src={thinking} className="Game-thinking" alt="thinking" />}
+        {!finished && !isHuman && <img src={thinking} className="Game-thinking" alt="thinking" />}
         <svg width={width} height={height}>
           <g>{hletters}</g>
           <g>{vletters}</g>
