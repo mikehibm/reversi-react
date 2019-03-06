@@ -1,58 +1,90 @@
 import * as React from 'react';
-import store, { EV_PAGE_CHANGED } from '../store';
-import { Player } from '../reversi';
+import store from '../store';
+import { Player, Colors } from '../reversi';
 import humanPlayer from '../players/humanPlayer';
 import computerPlayer from '../players/computerPlayer';
 import './Setting.css';
+import { timingSafeEqual } from 'crypto';
 
-export default function Setting() {
-  const cpus = [computerPlayer('cpu1'), computerPlayer('cpu2'), computerPlayer('cpu3')];
-  const human = humanPlayer();
-  const human1 = humanPlayer('Black');
-  const human2 = humanPlayer('White');
+interface State {
+  p1: Player;
+  p2: Player;
+}
 
-  const handleBack = () => store.setPage('menu');
+export default class Setting extends React.Component<{}, State> {
+  constructor(props: {}) {
+    super(props);
 
-  const handleStart = (p1: Player, p2: Player) => {
+    this.blackPlayers = [humanPlayer('You'), computerPlayer('cpu1'), computerPlayer('cpu2'), computerPlayer('cpu3')];
+    this.whitePlayers = [humanPlayer('You'), computerPlayer('cpu1'), computerPlayer('cpu2'), computerPlayer('cpu3')];
+
+    this.state = {
+      p1: this.blackPlayers[0],
+      p2: this.whitePlayers[1],
+    };
+  }
+  blackPlayers: Player[];
+  whitePlayers: Player[];
+
+  handleBack = () => store.setPage('menu');
+
+  handleSelect = (p: Player, color: Colors) => {
+    const newState = {
+      ...this.state,
+      p1: color === Colors.Black ? p : this.state.p1,
+      p2: color === Colors.White ? p : this.state.p2,
+    };
+    this.setState(newState);
+  };
+
+  handleStart = () => {
+    const { p1, p2 } = this.state;
+    if (p1.name === p2.name) {
+      p1.name = 'Black';
+      p2.name = 'White';
+    }
     store.startGame(p1, p2);
   };
 
-  return (
-    <div className="Setting">
-      <div className="Setting-header">
-        <button className="" onClick={handleBack}>
-          Back
+  renderPlayers(color: Colors) {
+    const { p1, p2 } = this.state;
+    const players = color === Colors.Black ? this.blackPlayers : this.whitePlayers;
+    return players.map((p, ix) => {
+      let classNames = `primary ${color === Colors.Black ? 'black' : 'white'}`;
+      if (p === p1) classNames += ' active';
+      if (p === p2) classNames += ' active';
+      return (
+        <button key={ix} className={classNames} onClick={() => this.handleSelect(p, color)}>
+          {p.isHuman ? p.name : ix}
         </button>
-      </div>
-      <ul>
-        {cpus.map((p, ix) => (
-          <li key={ix}>
-            <button className="primary black" onClick={() => handleStart(human, p)}>
-              Lv {ix + 1} Black
-            </button>
-            <button className="primary white" onClick={() => handleStart(p, human)}>
-              Lv {ix + 1} White
+      );
+    });
+  }
+
+  render() {
+    return (
+      <div className="Setting">
+        <div className="Setting-header">
+          <button className="" onClick={this.handleBack}>
+            Back
+          </button>
+        </div>
+        <ul>
+          <li className="playerLabel">
+            <h3>Black</h3>
+          </li>
+          <li className="levels">{this.renderPlayers(Colors.Black)}</li>
+          <li className="playerLabel">
+            <h3>White</h3>
+          </li>
+          <li className="levels">{this.renderPlayers(Colors.White)}</li>
+          <li>
+            <button className="primary start" onClick={() => this.handleStart()}>
+              Start
             </button>
           </li>
-        ))}
-        <li>TEST</li>
-        <li>
-          <button className="primary" onClick={() => handleStart(cpus[0], cpus[1])}>
-            CPU 1 vs 2
-          </button>
-          <button className="primary" onClick={() => handleStart(cpus[1], cpus[0])}>
-            CPU 2 vs 1
-          </button>
-        </li>
-        <li>
-          <button className="primary" onClick={() => handleStart(cpus[1], cpus[2])}>
-            CPU 2 vs 3
-          </button>
-          <button className="primary" onClick={() => handleStart(cpus[2], cpus[1])}>
-            CPU 3 vs 2
-          </button>
-        </li>
-      </ul>
-    </div>
-  );
+        </ul>
+      </div>
+    );
+  }
 }

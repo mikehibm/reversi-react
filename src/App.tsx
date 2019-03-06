@@ -33,7 +33,9 @@ class App extends React.Component<Props, State> {
         <header className="App-header">
           <h1 className="App-title">Reversi</h1>
         </header>
-        {page === 'setting' ? <Setting /> : page === 'game' ? <Game /> : <Menu />}
+        {page === 'menu' && <Menu />}
+        {page === 'setting' && <Setting />}
+        {page === 'game' && <Game />}
       </div>
     );
   }

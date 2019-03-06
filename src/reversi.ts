@@ -202,7 +202,6 @@ function checkIfPlaceable(board: BoardState, cell: CellState, turn: Colors): boo
 
 function checkIfStable(board: BoardState, cell: CellState): boolean {
   if (!cell || isOutOfRange(cell.row, cell.col) || cell.color === Colors.None) return false;
-  console.log(`Checking if stable ${positionToStr(cell.row, cell.col)}`);
 
   if (isCorner(cell.row, cell.col)) {
     cell.is_stable = true;
@@ -241,7 +240,6 @@ function checkIfStable(board: BoardState, cell: CellState): boolean {
   }
 
   if (cell.is_stable) {
-    console.log(`${positionToStr(cell.row, cell.col)} is stable.`);
     for (let dy = -1; dy <= 1; dy++) {
       for (let dx = -1; dx <= 1; dx++) {
         if (dx === 0 && dy === 0) continue;

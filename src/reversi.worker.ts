@@ -366,7 +366,7 @@ function evaluateByMinMax(cell: CellState, board: BoardState, weightTable: numbe
 
   placeableCells.forEach((cell) => {
     cell.value = evaluateByMinMax(cell, nextBoard, weightTable, depth - 1);
-    console.log(`Depth: ${depth} ${positionToStr(cell.row, cell.col)} v = ${cell.value}`);
+    // console.log(`Depth: ${depth} ${positionToStr(cell.row, cell.col)} v = ${cell.value}`);
   });
 
   // 評価値の降順にソート
@@ -377,6 +377,6 @@ function evaluateByMinMax(cell: CellState, board: BoardState, weightTable: numbe
   const topCells = placeableCells.filter((c) => c.value === topValue);
   const topCell = topCells[Math.floor(Math.random() * topCells.length)];
 
-  console.log(`Depth: ${depth} Top cell is ${positionToStr(topCell.row, topCell.col)} v = ${topCell.value}`);
+  // console.log(`Depth: ${depth} Top cell is ${positionToStr(topCell.row, topCell.col)} v = ${topCell.value}`);
   return topCell.value * -1;
 }

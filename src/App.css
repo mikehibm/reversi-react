@@ -34,12 +34,6 @@ button.primary {
   color: white;
   background-color: cornflowerblue;
 }
-button.primary.black {
-  background-color: darkcyan;
-}
-button.primary.white {
-  background-color: lightcoral;
-}
 button.primary:active {
   background-color: cyan;
   color: yellow;

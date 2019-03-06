@@ -2,7 +2,7 @@ import * as React from 'react';
 import store, { EV_BOARD_CHANGED } from '../store';
 import { ROWS, COLS, BoardState } from '../reversi';
 import Cell from './Cell';
-import thinking from '../spinner.svg';
+import spinner from '../spinner.svg';
 import './Board.css';
 
 interface Props {
@@ -99,7 +99,7 @@ export default class Board extends React.Component<Props, State> {
 
     return (
       <div className="Board">
-        {!finished && !isHuman && <img src={thinking} className="Board-thinking" alt="thinking" />}
+        {!finished && !isHuman && <img src={spinner} className="Board-spinner" alt="spinner" />}
         {finished && <div className="Board-winner">{winnerMsg}</div>}
         <svg width={width} height={height}>
           <g>{hletters}</g>

@@ -12,48 +12,39 @@
   padding-left: 0;
 }
 
-.Setting ul li {
+.Setting li {
   list-style-type: none;
-  margin-top: 1em;
+  margin-top: 1.2em;
+}
+
+.Setting li h3 {
+  margin: 0;
+}
+
+.Setting ul li.levels {
+  margin-top: 0.2em;
 }
 
 .Setting li button {
-  min-width: 7em;
-  margin-left: 0.5em;
-  margin-right: 0.5em;
+  min-width: 3em;
+  margin-left: 0.3em;
+  margin-right: 0.3em;
 }
 
-button {
-  padding: 0.8em;
-  border: none;
-  border-bottom: 2px solid #888;
-  border-radius: 0.4em;
-  font-size: 120%;
-  cursor: pointer;
-  transition: 300ms;
-}
-button:focus {
-  outline: none;
-}
-button:active {
-  font-size: 130%;
-}
-
-button.primary {
-  font-weight: bold;
-  color: white;
-  background-color: cornflowerblue;
-}
-button.primary.black {
+.Setting li button.primary.black {
   background-color: darkcyan;
 }
-button.primary.white {
+.Setting li button.primary.white {
   background-color: lightcoral;
 }
-button.primary:active {
-  background-color: cyan;
-  color: yellow;
+.Setting li button.primary.start {
+  margin-top: 1.4em;
+  min-width: 10em;
 }
-button.primary:hover {
+
+.Setting li button.primary.black.active,
+.Setting li button.primary.white.active {
+  color: yellow;
   background-color: blue;
+  border: 4px solid yellow;
 }
