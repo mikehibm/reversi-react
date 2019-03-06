@@ -263,12 +263,10 @@ function evaluateByMinMax(cell, board, weightTable, depth) {
     }
     placeableCells.forEach(function (cell) {
         cell.value = evaluateByMinMax(cell, nextBoard, weightTable, depth - 1);
-        console.log("Depth: " + depth + " " + positionToStr(cell.row, cell.col) + " v = " + cell.value);
     });
     placeableCells.sort(function (a, b) { return b.value - a.value; });
     var topValue = placeableCells[0].value;
     var topCells = placeableCells.filter(function (c) { return c.value === topValue; });
     var topCell = topCells[Math.floor(Math.random() * topCells.length)];
-    console.log("Depth: " + depth + " Top cell is " + positionToStr(topCell.row, topCell.col) + " v = " + topCell.value);
     return topCell.value * -1;
 }
