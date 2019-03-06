@@ -1,6 +1,7 @@
 import * as React from 'react';
 import store, { EV_BOARD_CHANGED } from '../store';
 import { BoardState } from '../reversi';
+import './Stats.css';
 
 interface Props {}
 interface State {
@@ -27,15 +28,15 @@ export default class Stats extends React.Component<Props, State> {
     return (
       <div className="Stats">
         {finished ? (
-          <p>{winner ? 'Winner: ' + winner.name : '-- Tie --'}</p>
+          <div>{winner ? 'Winner: ' + winner.name : '-- Tie --'}</div>
         ) : (
-          <p>
+          <div>
             Turn {turnCount}: {currentPlayer.name}
-          </p>
+          </div>
         )}
-        <p>
+        <div>
           Black: {blackCount}, White: {whiteCount}
-        </p>
+        </div>
       </div>
     );
   }

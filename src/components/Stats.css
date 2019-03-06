@@ -1,0 +1,8 @@
+.Stats {
+  position: relative;
+  padding: 0.4em;
+}
+
+.Stats div {
+  margin: 0.4em;
+}

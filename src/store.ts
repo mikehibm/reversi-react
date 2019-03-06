@@ -3,7 +3,7 @@ import { Position, BoardState, initBoard, cloneBoard, getNextTurn, Player, place
 import humanPlayer from './players/humanPlayer';
 import computerPlayer from './players/computerPlayer';
 
-export type Pages = 'game' | 'menu';
+export type Pages = 'game' | 'menu' | 'setting';
 
 export const EV_PAGE_CHANGED = 'page_changed';
 export const EV_BOARD_CHANGED = 'board_changed';

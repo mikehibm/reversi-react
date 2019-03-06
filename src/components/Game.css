@@ -7,12 +7,3 @@
   text-align: left;
   border-bottom: 1px solid lightgray;
 }
-
-.Game-thinking {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  /* margin: auto; */
-  transform: translate(-50%, -50%);
-  opacity: 0.55;
-}

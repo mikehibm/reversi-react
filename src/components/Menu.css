@@ -1,0 +1,14 @@
+.Menu ul {
+  padding-left: 0;
+}
+
+.Menu ul li {
+  list-style-type: none;
+  margin-top: 1em;
+}
+
+.Menu li button {
+  min-width: 7em;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+}

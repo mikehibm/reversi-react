@@ -11,12 +11,16 @@ interface State {
   windowSize: { w: number; h: number };
 }
 
-function showAlert(msg: string, board: BoardState) {
-  console.log(msg);
-  if (!board.blackPlayer.isHuman && !board.whitePlayer.isHuman) {
-    return;
-  }
-  alert(msg);
+async function showAlert(msg: string, board: BoardState) {
+  return new Promise((resolve) => {
+    setTimeout(async () => {
+      console.log(msg);
+      if (board.blackPlayer.isHuman || board.whitePlayer.isHuman) {
+        alert(msg);
+      }
+      resolve();
+    }, 100);
+  });
 }
 
 function getWindowSize() {
@@ -31,29 +35,32 @@ export default class Game extends React.Component<{}, State> {
     windowSize: getWindowSize(),
   };
 
+  showWinner = async (board: BoardState) => {
+    let msg = '';
+    if (board.winner) {
+      msg = `Finished! Winner is ${board.winner.name}`;
+    } else {
+      msg = `Finished! DRAW GAME!`;
+    }
+    await showAlert(msg, board);
+  };
+
   onBoardChange = async () => {
     const { board } = store.getState();
     this.setState({ board });
 
     if (board.finished) {
-      setTimeout(() => {
-        if (board.winner) {
-          showAlert(`Finished! Winner is ${board.winner.name}`, board);
-        } else {
-          showAlert(`Finished! DRAW GAME!`, board);
-        }
-      }, 100);
+      await this.showWinner(board);
     } else if (board.placeableCount === 0) {
-      setTimeout(() => {
-        showAlert(`${board.currentPlayer.name} must pass this turn.`, board);
-        store.skipTurn();
-      }, 100);
+      await showAlert(`${board.currentPlayer.name} must pass this turn.`, board);
+      store.skipTurn();
     } else if (!board.currentPlayer.isHuman && board.currentPlayer.think) {
       const result = await board.currentPlayer.think(board);
       console.log(`Think result=${positionToStr(result.row, result.col)}`);
       store.setStone(result);
     }
   };
+
   componentDidMount() {
     store.on(EV_BOARD_CHANGED, this.onBoardChange);
     setTimeout(() => this.onBoardChange(), 10);
@@ -79,7 +86,7 @@ export default class Game extends React.Component<{}, State> {
       <div className="Game">
         <div className="Game-header">
           <button className="" onClick={this.handleBack}>
-            Back
+            Home
           </button>
         </div>
         <Board width={sz} height={sz} />

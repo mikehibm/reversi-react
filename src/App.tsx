@@ -1,6 +1,7 @@
 import * as React from 'react';
 import store, { Pages, EV_PAGE_CHANGED } from './store';
 import Menu from './components/Menu';
+import Setting from './components/Setting';
 import Game from './components/Game';
 import './App.css';
 
@@ -32,7 +33,7 @@ class App extends React.Component<Props, State> {
         <header className="App-header">
           <h1 className="App-title">Reversi</h1>
         </header>
-        {page === 'game' ? <Game /> : <Menu />}
+        {page === 'setting' ? <Setting /> : page === 'game' ? <Game /> : <Menu />}
       </div>
     );
   }

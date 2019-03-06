@@ -2,7 +2,7 @@ import * as React from 'react';
 import store, { EV_BOARD_CHANGED } from '../store';
 import { ROWS, COLS, BoardState } from '../reversi';
 import Cell from './Cell';
-import thinking from '../thinking.svg';
+import thinking from '../spinner.svg';
 import './Board.css';
 
 interface Props {
@@ -85,9 +85,22 @@ export default class Board extends React.Component<Props, State> {
       return <Cell key={`cell-${i}`} x0={x} y0={y} width={cw} height={ch} cell={cell} />;
     });
 
+    const winnerMsg = board.winner ? (
+      <>
+        WINNER
+        <br />
+        IS
+        <br />
+        {board.winner.name}!!
+      </>
+    ) : (
+      <>DRAW GAME</>
+    );
+
     return (
       <div className="Board">
-        {!finished && !isHuman && <img src={thinking} className="Game-thinking" alt="thinking" />}
+        {!finished && !isHuman && <img src={thinking} className="Board-thinking" alt="thinking" />}
+        {finished && <div className="Board-winner">{winnerMsg}</div>}
         <svg width={width} height={height}>
           <g>{hletters}</g>
           <g>{vletters}</g>

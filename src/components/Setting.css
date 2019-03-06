@@ -1,20 +1,30 @@
-.App {
-  text-align: center;
+.Setting {
+  position: relative;
 }
 
-.App-header {
-  background-color: #88c;
-  height: 50px;
-  padding: 16px;
-  color: white;
+.Setting-header {
+  padding: 0.5em;
+  text-align: left;
+  border-bottom: 1px solid lightgray;
 }
 
-.App-title {
-  font-size: 1.4em;
+.Setting ul {
+  padding-left: 0;
+}
+
+.Setting ul li {
+  list-style-type: none;
+  margin-top: 1em;
+}
+
+.Setting li button {
+  min-width: 7em;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
 }
 
 button {
-  padding: 0.6em;
+  padding: 0.8em;
   border: none;
   border-bottom: 2px solid #888;
   border-radius: 0.4em;
