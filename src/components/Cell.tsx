@@ -30,7 +30,7 @@ export default function Cell({ x0, y0, width, height, cell }: Props) {
       {placeable && (
         <circle className="Cell-marker-placeable" cx={cx} cy={cy} r={width * 0.06} stroke="none" fill={'yellow'} />
       )}
-      {is_stable && <circle className="Cell-stable" cx={cx} cy={cy} r={width * 0.12} stroke="none" fill={'gray'} />}
+      {/* {is_stable && <circle className="Cell-stable" cx={cx} cy={cy} r={width * 0.12} stroke="none" fill={'gray'} />} */}
       {isLastMove && (
         <rect
           className="Cell-last"

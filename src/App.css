@@ -9,7 +9,7 @@
 
 .App-header {
   background-color: #88c;
-  height: 70px;
+  height: 56px;
   padding: 20px;
   color: white;
 }
@@ -47,7 +47,7 @@
 }
 
 button {
-  padding: 1em;
+  padding: 0.8em;
   border: none;
   border-bottom: 2px solid #888;
   border-radius: 0.4em;
@@ -79,52 +79,4 @@ button.primary:active {
 }
 button.primary:hover {
   background-color: blue;
-}
-
-.game {
-  position: relative;
-}
-
-.game-header {
-  padding: 0.5em;
-  text-align: left;
-  border-bottom: 1px solid lightgray;
-}
-
-.Game-thinking {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  /* margin: auto; */
-  transform: translate(-50%, -50%);
-  opacity: 0.55;
-}
-
-.Board {
-  margin: 0.8em;
-  background-color: #efefef;
-}
-
-.Cell {
-  cursor: default;
-}
-.Cell-placeable {
-  cursor: pointer;
-}
-.Cell-rect,
-.Cell-rect-placeable {
-  opacity: 0.1;
-  transition: 200ms;
-}
-.Cell-rect-placeable:hover {
-  opacity: 0.4;
-}
-.Cell-last {
-  opacity: 0.8;
-}
-.Cell-marker-placeable {
-  opacity: 0.2;
-}
-.Cell-stable {
-  opacity: 0.5;
 }

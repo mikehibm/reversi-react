@@ -25,7 +25,7 @@ export default class Stats extends React.Component<Props, State> {
     const { board } = this.state;
     const { currentPlayer, turnCount, blackCount, whiteCount, finished, winner } = board;
     return (
-      <>
+      <div className="Stats">
         {finished ? (
           <p>{winner ? 'Winner: ' + winner.name : '-- Tie --'}</p>
         ) : (
@@ -36,7 +36,7 @@ export default class Stats extends React.Component<Props, State> {
         <p>
           Black: {blackCount}, White: {whiteCount}
         </p>
-      </>
+      </div>
     );
   }
 }

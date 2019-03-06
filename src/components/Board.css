@@ -1,0 +1,28 @@
+.Board {
+  margin: 0;
+  background-color: #efefef;
+}
+
+.Cell {
+  cursor: default;
+}
+.Cell-placeable {
+  cursor: pointer;
+}
+.Cell-rect,
+.Cell-rect-placeable {
+  opacity: 0.1;
+  transition: 200ms;
+}
+.Cell-rect-placeable:hover {
+  opacity: 0.4;
+}
+.Cell-last {
+  opacity: 0.8;
+}
+.Cell-marker-placeable {
+  opacity: 0.2;
+}
+.Cell-stable {
+  opacity: 0.5;
+}

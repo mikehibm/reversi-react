@@ -3,9 +3,12 @@ import store, { EV_BOARD_CHANGED } from '../store';
 import { BoardState, positionToStr } from '../reversi';
 import Board from './Board';
 import Stats from './Stats';
+import './Game.css';
 
+const MAX_SIZE = 480;
 interface State {
   board: BoardState;
+  windowSize: { w: number; h: number };
 }
 
 function showAlert(msg: string, board: BoardState) {
@@ -16,8 +19,17 @@ function showAlert(msg: string, board: BoardState) {
   alert(msg);
 }
 
+function getWindowSize() {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  return { w, h };
+}
+
 export default class Game extends React.Component<{}, State> {
-  state = { board: store.getState().board };
+  state = {
+    board: store.getState().board,
+    windowSize: getWindowSize(),
+  };
 
   onBoardChange = async () => {
     const { board } = store.getState();
@@ -44,25 +56,33 @@ export default class Game extends React.Component<{}, State> {
   };
   componentDidMount() {
     store.on(EV_BOARD_CHANGED, this.onBoardChange);
-    setTimeout(() => this.onBoardChange(), 100);
+    setTimeout(() => this.onBoardChange(), 10);
+
+    window.addEventListener('resize', this.handleResize);
+    setTimeout(() => this.handleResize(), 10);
   }
   componentWillUnmount() {
     store.off(EV_BOARD_CHANGED, this.onBoardChange);
+    window.removeEventListener('resize', this.handleResize);
   }
 
-  handleBack = () => {
-    store.setPage('menu');
+  handleResize = () => {
+    const windowSize = getWindowSize();
+    this.setState({ windowSize });
   };
+  handleBack = () => store.setPage('menu');
 
   render() {
+    const sz = Math.min(this.state.windowSize.w, this.state.windowSize.h, MAX_SIZE);
+
     return (
-      <div className="game">
-        <div className="game-header">
+      <div className="Game">
+        <div className="Game-header">
           <button className="" onClick={this.handleBack}>
             Back
           </button>
         </div>
-        <Board width={420} height={420} />
+        <Board width={sz} height={sz} />
         <Stats />
       </div>
     );
