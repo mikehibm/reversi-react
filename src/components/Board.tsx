@@ -5,13 +5,13 @@ import Cell from './Cell';
 import spinner from '../spinner.svg';
 import './Board.css';
 
-interface Props {
+type Props = {
   width: number;
   height: number;
-}
-interface State {
+};
+type State = {
   board: BoardState;
-}
+};
 
 export default class Board extends React.Component<Props, State> {
   state = { board: store.getState().board };
@@ -65,13 +65,23 @@ export default class Board extends React.Component<Props, State> {
     ));
 
     const hletters = Array.from(new Array(COLS).keys()).map((_, i) => (
-      <text key={`h-${i}`} x={cw * i + cw / 2 + padding - 6} y={padding / 2 + 7} fontSize="16" stroke="black">
+      <text
+        key={`h-${i}`}
+        x={cw * i + cw / 2 + padding - 6}
+        y={padding / 2 + 7}
+        fontSize="16"
+        stroke="black">
         {String.fromCharCode('a'.charCodeAt(0) + i)}
       </text>
     ));
 
     const vletters = Array.from(new Array(ROWS).keys()).map((_, i) => (
-      <text key={`v-${i}`} x={padding / 2 - 4} y={ch * i + ch / 2 + padding + 7} fontSize="16" stroke="black">
+      <text
+        key={`v-${i}`}
+        x={padding / 2 - 4}
+        y={ch * i + ch / 2 + padding + 7}
+        fontSize="16"
+        stroke="black">
         {String.fromCharCode('1'.charCodeAt(0) + i)}
       </text>
     ));
@@ -82,7 +92,16 @@ export default class Board extends React.Component<Props, State> {
       const x = x0 + cw * col;
       const y = y0 + ch * row;
       const cell = board.cells[row][col];
-      return <Cell key={`cell-${i}`} x0={x} y0={y} width={cw} height={ch} cell={cell} />;
+      return (
+        <Cell
+          key={`cell-${i}`}
+          x0={x}
+          y0={y}
+          width={cw}
+          height={ch}
+          cell={cell}
+        />
+      );
     });
 
     const winnerMsg = board.winner ? (
@@ -99,13 +118,23 @@ export default class Board extends React.Component<Props, State> {
 
     return (
       <div className="Board">
-        {!finished && !isHuman && <img src={spinner} className="Board-spinner" alt="spinner" />}
+        {!finished && !isHuman && (
+          <img src={spinner} className="Board-spinner" alt="spinner" />
+        )}
         {finished && <div className="Board-winner">{winnerMsg}</div>}
         <svg width={width} height={height}>
           <g>{hletters}</g>
           <g>{vletters}</g>
           <g>
-            <rect x={x0} y={y0} width={rw} height={rh} stroke="black" strokeWidth="1" fill="green" />
+            <rect
+              x={x0}
+              y={y0}
+              width={rw}
+              height={rh}
+              stroke="black"
+              strokeWidth="1"
+              fill="green"
+            />
             {vlines}
             {hlines}
           </g>
