@@ -101,6 +101,7 @@ export function cloneBoard(board: BoardState): BoardState {
     ...board,
     cells: cloneCells(board.cells),
     lastMove: board.lastMove && { ...board.lastMove },
+    flippingCells: board.flippingCells ? board.flippingCells.map((c) => ({ ...c })) : undefined,
   };
 }
 
@@ -132,10 +133,12 @@ export function placeStoneAndGetNextTurn(board: BoardState, { row, col }: Positi
   // debugStables(newBoard);
 
   newBoard.lastMove = { row, col };
+  newBoard.flippingCells = turnableCells;
   return getNextTurn(newBoard);
 }
 
 export function getReversedColor(color: Colors) {
+  if (color === Colors.None) return color;
   return color === Colors.Black ? Colors.White : Colors.Black;
 }
 

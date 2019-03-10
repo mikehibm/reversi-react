@@ -1,6 +1,6 @@
 import * as React from 'react';
-import store from '../store';
-import { CellState, positionToStr } from '../reversi';
+import store, { FlippingEvent } from '../store';
+import { CellState, positionToStr, getReversedColor, Colors } from '../reversi';
 
 type Props = {
   x0: number;
@@ -8,25 +8,35 @@ type Props = {
   width: number;
   height: number;
   cell: CellState;
+  flipping?: FlippingEvent | null | undefined;
 };
 
-export default function Cell({ x0, y0, width, height, cell }: Props) {
+export default function Cell({ x0, y0, width, height, cell, flipping }: Props) {
   const { board } = store.getState();
-  const { currentPlayer, lastMove } = board;
+  const { currentPlayer, lastMove, isFlipping, flippingCells } = board;
   const isHuman = currentPlayer.isHuman;
-  const { row, col, color, placeable, is_stable } = cell;
+  const { row, col, placeable, is_stable } = cell;
+
   const isLastMove = lastMove.row === row && lastMove.col === col;
-  const colorNames = ['none', 'black', 'white'];
-  const colorName = colorNames[color];
   const cx = x0 + width / 2;
   const cy = y0 + height / 2;
   const r = width * 0.44;
   const cellClass = 'Cell' + (placeable && isHuman ? '-placeable' : '');
   const rectClass = 'Cell-rect' + (placeable && isHuman ? '-placeable' : '');
 
+  const flipProgress = flipping ? flipping.count / flipping.total : 0;
+  const opacity = flipping ? Math.abs(flipProgress * 2 - 1) : 1;
+  const wrate = flipping ? Math.abs(flipProgress * 2 - 1) : 1;
+  const color = flipping && flipProgress < 0.5 ? getReversedColor(cell.color) : cell.color;
+  const colorNames = ['none', 'black', 'white'];
+  const colorName = colorNames[color];
+
   return (
-    <g className={cellClass} onClick={placeable && isHuman ? () => handleClick(row, col) : undefined}>
-      <circle className="Cell-circle" cx={cx} cy={cy} r={r} stroke="none" fill={colorName} />
+    <g
+      className={cellClass}
+      opacity={opacity}
+      onClick={placeable && isHuman && !isFlipping ? () => handleClick(row, col) : undefined}>
+      <ellipse className="Cell-circle" cx={cx} cy={cy} rx={r * wrate} ry={r} stroke="none" fill={colorName} />
       {placeable && (
         <circle className="Cell-marker-placeable" cx={cx} cy={cy} r={width * 0.06} stroke="none" fill={'yellow'} />
       )}

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import store, { EV_BOARD_CHANGED } from '../store';
+import store, { EV_BOARD_CHANGED, EV_BOARD_FLIPPING, FlippingEvent } from '../store';
 import { ROWS, COLS, BoardState } from '../reversi';
 import Cell from './Cell';
 import spinner from '../spinner.svg';
@@ -11,25 +11,35 @@ type Props = {
 };
 type State = {
   board: BoardState;
+  flipping: FlippingEvent | null;
 };
 
 export default class Board extends React.Component<Props, State> {
-  state = { board: store.getState().board };
+  state = { board: store.getState().board, flipping: null };
 
   onChangeStore = () => {
     const { board } = store.getState();
-    this.setState({ board });
+    this.setState({ board, flipping: null });
   };
+
+  onFlipping = (flipping: FlippingEvent) => {
+    const { board } = store.getState();
+    console.log(flipping.count, flipping.total, board.isFlipping, board.flippingCells);
+    this.setState({ board, flipping });
+  };
+
   componentDidMount() {
     store.on(EV_BOARD_CHANGED, this.onChangeStore);
+    store.on(EV_BOARD_FLIPPING, this.onFlipping);
   }
   componentWillUnmount() {
     store.off(EV_BOARD_CHANGED, this.onChangeStore);
+    store.off(EV_BOARD_FLIPPING, this.onFlipping);
   }
 
   render() {
-    const { board } = this.state;
-    const { finished, currentPlayer } = board;
+    const { board, flipping } = this.state;
+    const { finished, currentPlayer, isFlipping } = board;
     const isHuman = currentPlayer.isHuman;
     const { width, height } = this.props;
     const padding = 30;
@@ -65,23 +75,13 @@ export default class Board extends React.Component<Props, State> {
     ));
 
     const hletters = Array.from(new Array(COLS).keys()).map((_, i) => (
-      <text
-        key={`h-${i}`}
-        x={cw * i + cw / 2 + padding - 6}
-        y={padding / 2 + 7}
-        fontSize="16"
-        stroke="black">
+      <text key={`h-${i}`} x={cw * i + cw / 2 + padding - 6} y={padding / 2 + 7} fontSize="16" stroke="black">
         {String.fromCharCode('a'.charCodeAt(0) + i)}
       </text>
     ));
 
     const vletters = Array.from(new Array(ROWS).keys()).map((_, i) => (
-      <text
-        key={`v-${i}`}
-        x={padding / 2 - 4}
-        y={ch * i + ch / 2 + padding + 7}
-        fontSize="16"
-        stroke="black">
+      <text key={`v-${i}`} x={padding / 2 - 4} y={ch * i + ch / 2 + padding + 7} fontSize="16" stroke="black">
         {String.fromCharCode('1'.charCodeAt(0) + i)}
       </text>
     ));
@@ -92,16 +92,10 @@ export default class Board extends React.Component<Props, State> {
       const x = x0 + cw * col;
       const y = y0 + ch * row;
       const cell = board.cells[row][col];
-      return (
-        <Cell
-          key={`cell-${i}`}
-          x0={x}
-          y0={y}
-          width={cw}
-          height={ch}
-          cell={cell}
-        />
-      );
+      const flippingData =
+        board.flippingCells &&
+        (board.flippingCells.find((c) => c.row === cell.row && c.col === cell.col) ? flipping : undefined);
+      return <Cell key={`cell-${i}`} x0={x} y0={y} width={cw} height={ch} cell={cell} flipping={flippingData} />;
     });
 
     const winnerMsg = board.winner ? (
@@ -118,23 +112,13 @@ export default class Board extends React.Component<Props, State> {
 
     return (
       <div className="Board">
-        {!finished && !isHuman && (
-          <img src={spinner} className="Board-spinner" alt="spinner" />
-        )}
+        {!finished && !isHuman && !isFlipping && <img src={spinner} className="Board-spinner" alt="spinner" />}
         {finished && <div className="Board-winner">{winnerMsg}</div>}
         <svg width={width} height={height}>
           <g>{hletters}</g>
           <g>{vletters}</g>
           <g>
-            <rect
-              x={x0}
-              y={y0}
-              width={rw}
-              height={rh}
-              stroke="black"
-              strokeWidth="1"
-              fill="green"
-            />
+            <rect x={x0} y={y0} width={rw} height={rh} stroke="black" strokeWidth="1" fill="green" />
             {vlines}
             {hlines}
           </g>
