@@ -6,10 +6,10 @@ import Stats from './Stats';
 import './Game.css';
 
 const MAX_SIZE = 480;
-interface State {
+type State = {
   board: BoardState;
   windowSize: { w: number; h: number };
-}
+};
 
 async function showAlert(msg: string, board: BoardState) {
   return new Promise((resolve) => {

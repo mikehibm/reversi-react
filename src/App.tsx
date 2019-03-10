@@ -5,10 +5,10 @@ import Setting from './components/Setting';
 import Game from './components/Game';
 import './App.css';
 
-interface Props {}
-interface State {
+type Props = {};
+type State = {
   page: Pages;
-}
+};
 
 class App extends React.Component<Props, State> {
   state = { page: 'menu' as Pages };

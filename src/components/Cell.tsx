@@ -2,13 +2,13 @@ import * as React from 'react';
 import store from '../store';
 import { CellState, positionToStr } from '../reversi';
 
-interface Props {
+type Props = {
   x0: number;
   y0: number;
   width: number;
   height: number;
   cell: CellState;
-}
+};
 
 export default function Cell({ x0, y0, width, height, cell }: Props) {
   const { board } = store.getState();

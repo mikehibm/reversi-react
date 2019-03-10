@@ -9,12 +9,12 @@ const COLS = 8;
 const MAX_SCORE = 999999999;
 const STABLE_SCORE = 500;
 
-interface MyPosition {
+type MyPosition = {
   row: number;
   col: number;
-}
+};
 
-interface CellState {
+type CellState = {
   index: number;
   row: number;
   col: number;
@@ -23,15 +23,15 @@ interface CellState {
   is_stable: boolean;
   turnableCells: MyPosition[];
   value: number;
-}
+};
 
-interface Player {
+type Player = {
   name?: string;
   isHuman: boolean;
   think?: (board: BoardState) => Promise<MyPosition>;
-}
+};
 
-interface BoardState {
+type BoardState = {
   cells: CellState[][];
   turn: Colors; // 1=Black, 2=White
   turnCount: number;
@@ -45,48 +45,7 @@ interface BoardState {
   winner?: Player;
   blackPlayer: Player;
   whitePlayer: Player;
-}
-
-// function initBoard(blackPlayer: Player, whitePlayer: Player): BoardState {
-//   const cells = Array.from(new Array(ROWS).keys()).map((_, row) => {
-//     return Array.from(new Array(COLS).keys()).map((_, col) => {
-//       return {
-//         index: row * COLS + col,
-//         col: col,
-//         row: row,
-//         color: Colors.None,
-//         placeable: false,
-//         turnableCells: [],
-//         value: 0,
-//       } as CellState;
-//     });
-//   });
-
-//   // Set 4 stones as initial state.
-//   const cx = COLS / 2 - 1;
-//   const cy = ROWS / 2 - 1;
-//   cells[cy][cx].color = Colors.White;
-//   cells[cy][cx + 1].color = Colors.Black;
-//   cells[cy + 1][cx].color = Colors.Black;
-//   cells[cy + 1][cx + 1].color = Colors.White;
-
-//   const board = {
-//     cells,
-//     turn: Colors.White,
-//     turnCount: 0,
-//     blackCount: 0,
-//     whiteCount: 0,
-//     placeableCount: 0,
-//     stableCount: 0,
-//     finished: false,
-//     lastMove: { row: -1, col: -1 },
-//     currentPlayer: blackPlayer,
-//     blackPlayer: blackPlayer,
-//     whitePlayer: whitePlayer,
-//   };
-
-//   return getNextTurn(board);
-// }
+};
 
 function forAllCells(board: BoardState, func: (cell: CellState) => void) {
   board.cells.forEach((row) => {

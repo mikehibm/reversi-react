@@ -6,10 +6,10 @@ import computerPlayer from '../players/computerPlayer';
 import './Setting.css';
 import { timingSafeEqual } from 'crypto';
 
-interface State {
+type State = {
   p1: Player;
   p2: Player;
-}
+};
 
 export default class Setting extends React.Component<{}, State> {
   constructor(props: {}) {

@@ -7,12 +7,12 @@ export enum Colors {
 export const ROWS = 8;
 export const COLS = 8;
 
-export interface Position {
+export type Position = {
   row: number;
   col: number;
-}
+};
 
-export interface CellState {
+export type CellState = {
   index: number;
   row: number;
   col: number;
@@ -21,15 +21,15 @@ export interface CellState {
   is_stable: boolean;
   turnableCells: Position[];
   value: number;
-}
+};
 
-export interface Player {
+export type Player = {
   name?: string;
   isHuman: boolean;
   think?: (board: BoardState) => Promise<Position>;
-}
+};
 
-export interface BoardState {
+export type BoardState = {
   cells: CellState[][];
   turn: Colors; // 1=Black, 2=White
   turnCount: number;
@@ -43,7 +43,9 @@ export interface BoardState {
   winner?: Player;
   blackPlayer: Player;
   whitePlayer: Player;
-}
+  isFlipping: boolean;
+  flippingCells?: CellState[];
+};
 
 export function initBoard(blackPlayer: Player, whitePlayer: Player): BoardState {
   const cells = Array.from(new Array(ROWS).keys()).map((_, row) => {
@@ -82,6 +84,7 @@ export function initBoard(blackPlayer: Player, whitePlayer: Player): BoardState 
     currentPlayer: blackPlayer,
     blackPlayer: blackPlayer,
     whitePlayer: whitePlayer,
+    isFlipping: false,
   };
 
   return getNextTurn(board);
@@ -110,9 +113,8 @@ function cloneCells(cells: CellState[][]): CellState[][] {
   });
 }
 
-export function placeStoneAndGetNextTurn(board: BoardState, { row, col }: Position): BoardState | null {
+export function placeStoneAndGetNextTurn(board: BoardState, { row, col }: Position): BoardState {
   const newBoard = cloneBoard(board);
-
   if (isOutOfRange(row, col)) return newBoard;
 
   const cell = newBoard.cells[row][col];
@@ -127,7 +129,7 @@ export function placeStoneAndGetNextTurn(board: BoardState, { row, col }: Positi
 
   // Check stable stones.
   [cell, ...turnableCells].forEach((c) => checkIfStable(newBoard, c));
-  debugStables(newBoard);
+  // debugStables(newBoard);
 
   newBoard.lastMove = { row, col };
   return getNextTurn(newBoard);

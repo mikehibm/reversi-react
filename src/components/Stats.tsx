@@ -3,10 +3,10 @@ import store, { EV_BOARD_CHANGED } from '../store';
 import { BoardState } from '../reversi';
 import './Stats.css';
 
-interface Props {}
-interface State {
+type Props = {};
+type State = {
   board: BoardState;
-}
+};
 
 export default class Stats extends React.Component<Props, State> {
   state = { board: store.getState().board };
