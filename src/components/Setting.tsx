@@ -1,18 +1,25 @@
 import * as React from 'react';
-import store from '../store';
+import store, { PageTag } from '../store';
 import { Player, Colors } from '../reversi';
 import humanPlayer from '../players/humanPlayer';
 import computerPlayer from '../players/computerPlayer';
 import './Setting.css';
-import { timingSafeEqual } from 'crypto';
 
-type State = {
-  p1: Player;
-  p2: Player;
+type SettingProps = {
+  prevPage: PageTag;
+  page: PageTag;
 };
 
-export default class Setting extends React.Component<{}, State> {
-  constructor(props: {}) {
+type SettingState = {
+  p1: Player;
+  p2: Player;
+  hidden: Boolean;
+};
+
+const thisPage: PageTag = 'setting';
+
+export default class Setting extends React.Component<SettingProps, SettingState> {
+  constructor(props: SettingProps) {
     super(props);
 
     this.blackPlayers = [humanPlayer('You'), computerPlayer('cpu1'), computerPlayer('cpu2'), computerPlayer('cpu3')];
@@ -21,6 +28,7 @@ export default class Setting extends React.Component<{}, State> {
     this.state = {
       p1: this.blackPlayers[0],
       p2: this.whitePlayers[1],
+      hidden: true,
     };
   }
   blackPlayers: Player[];
@@ -36,6 +44,16 @@ export default class Setting extends React.Component<{}, State> {
     };
     this.setState(newState);
   };
+
+  componentDidUpdate(prevProps: SettingProps) {
+    const { prevPage, page } = this.props;
+    if (prevPage === thisPage && prevProps.prevPage !== thisPage) {
+      this.setState({ hidden: true });
+    }
+    if (page === thisPage && prevProps.page !== thisPage) {
+      this.setState({ hidden: false });
+    }
+  }
 
   handleStart = () => {
     const { p1, p2 } = this.state;
@@ -62,8 +80,11 @@ export default class Setting extends React.Component<{}, State> {
   }
 
   render() {
+    const className =
+      'Setting ' + (this.state.hidden ? (this.props.page === 'game' ? 'hidden-left ' : 'hidden-right ') : '');
+
     return (
-      <div className="Setting">
+      <div className={className}>
         <div className="Setting-header">
           <button className="" onClick={this.handleBack}>
             Back

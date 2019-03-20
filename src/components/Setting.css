@@ -1,5 +1,20 @@
 .Setting {
-  position: relative;
+  width: 100vw;
+  position: absolute;
+  opacity: 1;
+  transform: translateX(0vw);
+  transition: opacity 0.8s, transform 0.4s;
+  transition-timing-function: ease-out;
+}
+
+.Setting.hidden-left {
+  opacity: 0;
+  transform: translateX(-100vw);
+}
+
+.Setting.hidden-right {
+  opacity: 0;
+  transform: translateX(100vw);
 }
 
 .Setting-header {

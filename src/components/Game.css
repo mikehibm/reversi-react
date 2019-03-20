@@ -1,5 +1,14 @@
 .Game {
-  position: relative;
+  width: 100vw;
+  position: absolute;
+  opacity: 1;
+  transform: translateX(0vw);
+  transition: opacity 0.8s, transform 0.4s;
+  transition-timing-function: ease-out;
+}
+.Game.hidden {
+  opacity: 0;
+  transform: translateX(100vw);
 }
 
 .Game-header {

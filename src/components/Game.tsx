@@ -1,15 +1,24 @@
 import * as React from 'react';
-import store, { EV_BOARD_CHANGED } from '../store';
+import store, { EV_BOARD_CHANGED, PageTag } from '../store';
 import { BoardState, positionToStr } from '../reversi';
 import Board from './Board';
 import Stats from './Stats';
 import './Game.css';
 
 const MAX_SIZE = 480;
-type State = {
+
+type GameProps = {
+  prevPage: PageTag;
+  page: PageTag;
+};
+
+type GameState = {
   board: BoardState;
   windowSize: { w: number; h: number };
+  hidden: Boolean;
 };
+
+const thisPage: PageTag = 'game';
 
 async function showAlert(msg: string, board: BoardState) {
   return new Promise((resolve) => {
@@ -29,10 +38,11 @@ function getWindowSize() {
   return { w, h };
 }
 
-export default class Game extends React.Component<{}, State> {
+export default class Game extends React.Component<GameProps, GameState> {
   state = {
     board: store.getState().board,
     windowSize: getWindowSize(),
+    hidden: true,
   };
 
   showWinner = async (board: BoardState) => {
@@ -68,6 +78,17 @@ export default class Game extends React.Component<{}, State> {
     window.addEventListener('resize', this.handleResize);
     setTimeout(() => this.handleResize(), 10);
   }
+
+  componentDidUpdate(prevProps: GameProps) {
+    const { prevPage, page } = this.props;
+    if (prevPage === thisPage && prevProps.prevPage !== thisPage) {
+      this.setState({ hidden: true });
+    }
+    if (page === thisPage && prevProps.page !== thisPage) {
+      this.setState({ hidden: false });
+    }
+  }
+
   componentWillUnmount() {
     store.off(EV_BOARD_CHANGED, this.onBoardChange);
     window.removeEventListener('resize', this.handleResize);
@@ -80,10 +101,11 @@ export default class Game extends React.Component<{}, State> {
   handleBack = () => store.setPage('menu');
 
   render() {
+    const { hidden } = this.state;
     const sz = Math.min(this.state.windowSize.w, this.state.windowSize.h, MAX_SIZE);
 
     return (
-      <div className="Game">
+      <div className={'Game ' + (hidden ? 'hidden ' : '')}>
         <div className="Game-header">
           <button className="" onClick={this.handleBack}>
             Home

@@ -13,7 +13,7 @@ import {
 import humanPlayer from './players/humanPlayer';
 import computerPlayer from './players/computerPlayer';
 
-export type Pages = 'game' | 'menu' | 'setting';
+export type PageTag = 'game' | 'menu' | 'setting';
 
 export const EV_PAGE_CHANGED = 'page_changed';
 export const EV_BOARD_CHANGED = 'board_changed';
@@ -23,7 +23,7 @@ const FLIP_DURATION = 400;
 const FLIP_FRAMES = 20;
 
 export type AppState = {
-  page: Pages;
+  page: PageTag;
   board: BoardState;
 };
 
@@ -52,7 +52,7 @@ class Store extends EventEmitter {
     this.setPage('game');
   }
 
-  public setPage(page: Pages): void {
+  public setPage(page: PageTag): void {
     this.state = { ...this.getState(), page };
     this.emit(EV_PAGE_CHANGED);
   }
