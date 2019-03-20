@@ -35,9 +35,9 @@ class App extends React.Component<Props, State> {
         <header className="App-header">
           <h1 className="App-title">Reversi</h1>
         </header>
-        <Menu prevPage={prevPage} page={page} />
-        <Setting prevPage={prevPage} page={page} />
         <Game prevPage={prevPage} page={page} />
+        <Setting prevPage={prevPage} page={page} />
+        <Menu prevPage={prevPage} page={page} />
       </div>
     );
   }

@@ -50,6 +50,7 @@ class Store extends EventEmitter {
     const board = this.getInitialBoard(player1, player2);
     this.state = { ...this.getState(), board };
     this.setPage('game');
+    this.emit(EV_BOARD_CHANGED);
   }
 
   public setPage(page: PageTag): void {

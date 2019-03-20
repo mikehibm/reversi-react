@@ -14,6 +14,8 @@ type State = {
   flipping: FlippingEvent | null;
 };
 
+const HEADER_HEIGHT = 64;
+
 export default class Board extends React.Component<Props, State> {
   state = { board: store.getState().board, flipping: null };
 
@@ -42,13 +44,14 @@ export default class Board extends React.Component<Props, State> {
     const { finished, currentPlayer, isFlipping } = board;
     const isHuman = currentPlayer.isHuman;
     const { width, height } = this.props;
-    const padding = 30;
+    const padding = 36;
     const rw = width - padding * 2;
     const rh = height - padding * 2;
     const cw = rw / COLS;
     const ch = rh / ROWS;
     const x0 = padding;
     const y0 = padding;
+    const center = { x: x0 + rw / 2, y: y0 + rh / 2 };
 
     const vlines = Array.from(new Array(8).keys()).map((_, i) => (
       <line
@@ -112,8 +115,14 @@ export default class Board extends React.Component<Props, State> {
 
     return (
       <div className="Board">
-        {!finished && !isHuman && !isFlipping && <img src={spinner} className="Board-spinner" alt="spinner" />}
-        {finished && <div className="Board-winner">{winnerMsg}</div>}
+        {!finished && !isHuman && !isFlipping && (
+          <img src={spinner} className="Board-spinner" style={{ top: center.y + HEADER_HEIGHT }} alt="spinner" />
+        )}
+        {finished && (
+          <div className="Board-winner" style={{ top: center.y + HEADER_HEIGHT }}>
+            {winnerMsg}
+          </div>
+        )}
         <svg width={width} height={height}>
           <g>{hletters}</g>
           <g>{vletters}</g>

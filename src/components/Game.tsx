@@ -33,8 +33,8 @@ async function showAlert(msg: string, board: BoardState) {
 }
 
 function getWindowSize() {
-  const w = window.innerWidth;
-  const h = window.innerHeight;
+  const w = Math.min(window.innerWidth, window.parent.screen.width);
+  const h = Math.min(window.innerHeight, window.parent.screen.height);
   return { w, h };
 }
 
@@ -72,37 +72,45 @@ export default class Game extends React.Component<GameProps, GameState> {
   };
 
   componentDidMount() {
-    store.on(EV_BOARD_CHANGED, this.onBoardChange);
-    setTimeout(() => this.onBoardChange(), 10);
-
     window.addEventListener('resize', this.handleResize);
     setTimeout(() => this.handleResize(), 10);
   }
 
   componentDidUpdate(prevProps: GameProps) {
     const { prevPage, page } = this.props;
+
+    // When this screen becomes hidden
     if (prevPage === thisPage && prevProps.prevPage !== thisPage) {
       this.setState({ hidden: true });
+
+      store.off(EV_BOARD_CHANGED, this.onBoardChange);
     }
+
+    // When this screen becomes visible
     if (page === thisPage && prevProps.page !== thisPage) {
       this.setState({ hidden: false });
+
+      store.on(EV_BOARD_CHANGED, this.onBoardChange);
+      setTimeout(() => this.onBoardChange(), 10);
+
+      setTimeout(() => this.handleResize(), 1);
     }
   }
 
   componentWillUnmount() {
-    store.off(EV_BOARD_CHANGED, this.onBoardChange);
     window.removeEventListener('resize', this.handleResize);
   }
 
   handleResize = () => {
     const windowSize = getWindowSize();
     this.setState({ windowSize });
+    console.log('handleResize', windowSize);
   };
   handleBack = () => store.setPage('menu');
 
   render() {
-    const { hidden } = this.state;
-    const sz = Math.min(this.state.windowSize.w, this.state.windowSize.h, MAX_SIZE);
+    const { hidden, windowSize } = this.state;
+    const sz = Math.min(windowSize.w, windowSize.h, MAX_SIZE);
 
     return (
       <div className={'Game ' + (hidden ? 'hidden ' : '')}>

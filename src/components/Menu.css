@@ -1,9 +1,12 @@
 .Menu {
   width: 100vw;
-  position: absolute;
+  height: 100vh;
+  left: 0;
+  top: -200vh;
+  position: relative;
   opacity: 1;
   transform: translateX(0vw);
-  transition: opacity 0.8s, transform 0.4s;
+  transition: opacity 0.6s, transform 0.4s;
   transition-timing-function: ease-out;
 }
 

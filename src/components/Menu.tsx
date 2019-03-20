@@ -25,9 +25,13 @@ export default class Menu extends React.Component<MenuProps, MenuState> {
   }
   componentDidUpdate(prevProps: MenuProps) {
     const { prevPage, page } = this.props;
+
+    // When this screen becomes hidden
     if (prevPage === thisPage && prevProps.prevPage !== thisPage) {
       this.setState({ hidden: true });
     }
+
+    // When this screen becomes visible
     if (page === thisPage && prevProps.page !== thisPage) {
       this.setState({ hidden: false });
     }
