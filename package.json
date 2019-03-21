@@ -14,7 +14,7 @@
     "build": "npm run worker && react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "deploy:now": "npm run build && now build -p -n reversi"
+    "deploy:now": "npm run build && now build -p -n reversi --target=production"
   },
   "devDependencies": {
     "@types/eventemitter3": "^2.0.2",
