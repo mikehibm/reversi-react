@@ -104,7 +104,6 @@ export default class Game extends React.Component<GameProps, GameState> {
   handleResize = () => {
     const windowSize = getWindowSize();
     this.setState({ windowSize });
-    console.log('handleResize', windowSize);
   };
   handleBack = () => store.setPage('menu');
 

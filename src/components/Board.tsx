@@ -26,7 +26,6 @@ export default class Board extends React.Component<Props, State> {
 
   onFlipping = (flipping: FlippingEvent) => {
     const { board } = store.getState();
-    console.log(flipping.count, flipping.total, board.isFlipping, board.flippingCells);
     this.setState({ board, flipping });
   };
 
