@@ -25,7 +25,7 @@ export default function Cell({ x0, y0, width, height, cell, flipping }: Props) {
   const rectClass = 'Cell-rect' + (placeable && isHuman ? '-placeable' : '');
 
   const flipProgress = flipping ? flipping.count / flipping.total : 0;
-  const opacity = flipping ? Math.abs(flipProgress * 2 - 1) : 1;
+  //const opacity = flipping ? Math.abs(flipProgress * 2 - 1) : 1;
   const wrate = flipping ? Math.abs(flipProgress * 2 - 1) : 1;
   const color = flipping && flipProgress < 0.5 ? getReversedColor(cell.color) : cell.color;
   const colorNames = ['none', 'black', 'white'];
@@ -34,7 +34,7 @@ export default function Cell({ x0, y0, width, height, cell, flipping }: Props) {
   return (
     <g
       className={cellClass}
-      opacity={opacity}
+      // opacity={opacity}
       onClick={placeable && isHuman && !isFlipping ? () => handleClick(row, col) : undefined}>
       <ellipse className="Cell-circle" cx={cx} cy={cy} rx={r * wrate} ry={r} stroke="none" fill={colorName} />
       {placeable && (
